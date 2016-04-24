@@ -25,6 +25,7 @@ interface EventStore {
 }
 
 export abstract class Good<P, S> extends React.Component<P & GoodProps, S & GoodState> {
+  emitter:EventEmitter;
   eventStore:any[] = [];
 
   addEventSafety(target, ...args) {
@@ -99,7 +100,6 @@ export abstract class Good<P, S> extends React.Component<P & GoodProps, S & Good
 }
 
 export abstract class Parcel<P, S> extends Good<P & ParcelProps, S & ParcelState> {
-  emitter:EventEmitter;
   routeChildren;
   addedOnStore:EventStore[] = [];
   acceptable:any = {};

@@ -11,7 +11,15 @@ var MainContext = (function (_super) {
     function MainContext() {
         _super.apply(this, arguments);
     }
+    MainContext.prototype.componentWillMount = function () {
+        _super.prototype.componentWillMount.call(this);
+        this.setState({
+            file: this.props.file,
+        });
+    };
     MainContext.prototype.listen = function (to) {
+        var _this = this;
+        to(null, 'file:set', function (file) { return _this.setState({ file: file }); });
     };
     MainContext.prototype.route = function (state) {
         this.routeChildren = this.props.children.filter(function (child) {
@@ -19,7 +27,7 @@ var MainContext = (function (_super) {
         });
     };
     MainContext.prototype.componentWillUpdate = function (props, state) {
-        this.route(state);
+        //this.route(state)
     };
     return MainContext;
 }(parcel_1.Parcel));

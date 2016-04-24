@@ -4,5 +4,4 @@ export default class FileSelectorContext extends Parcel {
 
   listen(to) {
   }
-
 }

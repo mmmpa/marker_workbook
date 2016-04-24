@@ -2,7 +2,7 @@ import * as changeCase from 'change-case';
 import {FileType} from "../constants/constants";
 import PDFHandler from "./pdf-handler";
 declare const PDFJS:any;
-PDFJS.workerSrc = '/js/pdf.worker.js';
+PDFJS.workerSrc = './js/pdf.worker.js';
 
 export default class FileHandler {
   public type:FileType;
@@ -28,7 +28,7 @@ export default class FileHandler {
 
   get handler() {
     return (e)=> {
-      let file = e.path[0].files[0];
+      let file = e.target.files[0];
       let reader = new FileReader();
       this.type = this.detectFileType(file.name);
 

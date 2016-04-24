@@ -2,7 +2,16 @@ import {Parcel} from "../libs/parcel";
 require("zepto/zepto.min");
 
 export default class MainContext extends Parcel {
+  componentWillMount() {
+    super.componentWillMount();
+
+    this.setState({
+      file: this.props.file,
+    })
+  }
+
   listen(to) {
+    to(null, 'file:set', (file)=> this.setState({file}));
   }
 
   route(state) {
@@ -12,6 +21,6 @@ export default class MainContext extends Parcel {
   }
 
   componentWillUpdate(props, state) {
-    this.route(state)
+    //this.route(state)
   }
 }

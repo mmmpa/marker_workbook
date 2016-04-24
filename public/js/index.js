@@ -8,22 +8,52 @@ var __extends = (this && this.__extends) || function (d, b) {
 var React = require("react");
 var parcel_1 = require("../libs/parcel");
 var file_handler_1 = require("../models/file-handler");
-var constants_1 = require("../constants/constants");
 var FileSelectorComponent = (function (_super) {
     __extends(FileSelectorComponent, _super);
     function FileSelectorComponent() {
         _super.apply(this, arguments);
     }
-    FileSelectorComponent.prototype.componentWillMount = function () {
-        this.setState({
-            file: this.props.file,
-            page: 1,
-            dataURL: null
-        });
+    FileSelectorComponent.prototype.open = function () {
+        var _this = this;
+        var fileHandler = new file_handler_1.default(function (file) { return _this.dispatch('file:set', file); });
+        var $fileListener = $('<input type="file"/>');
+        $fileListener.bind('change', fileHandler.handler);
+        $fileListener.trigger('click');
     };
-    FileSelectorComponent.prototype.componentDidMount = function () {
+    FileSelectorComponent.prototype.render = function () {
+        var _this = this;
+        return React.createElement("div", null, React.createElement("button", {className: "open", onClick: function () { return _this.open(); }}, "open"));
     };
-    FileSelectorComponent.prototype.writeDisplay = function (file) {
+    return FileSelectorComponent;
+}(parcel_1.Good));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = FileSelectorComponent;
+
+},{"../libs/parcel":8,"../models/file-handler":9,"react":188}],2:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var React = require("react");
+var parcel_1 = require("../libs/parcel");
+var constants_1 = require("../constants/constants");
+var WorkbookComponent = (function (_super) {
+    __extends(WorkbookComponent, _super);
+    function WorkbookComponent() {
+        _super.apply(this, arguments);
+    }
+    WorkbookComponent.prototype.componentWillMount = function () {
+        this.setState({});
+        this.componentWillReceiveProps(this.props);
+    };
+    WorkbookComponent.prototype.componentWillReceiveProps = function (props) {
+        if (this.props.file !== props.file) {
+            this.initialize(props.file);
+        }
+    };
+    WorkbookComponent.prototype.initialize = function (file) {
         var _this = this;
         if (!file) {
             return null;
@@ -35,50 +65,21 @@ var FileSelectorComponent = (function (_super) {
             this.setState({ dataURL: file.dataURL });
         }
     };
-    FileSelectorComponent.prototype.page = function (page) {
+    WorkbookComponent.prototype.page = function (page) {
         var _this = this;
         this.setState({ page: page });
         this.state.file.pdf.page(page, function (dataURL) { return _this.setState({ dataURL: dataURL }); });
     };
-    FileSelectorComponent.prototype.open = function () {
-        var _this = this;
-        var fileHandler = new file_handler_1.default(function (file) { return _this.writeDisplay(file); });
-        var $fileListener = $('<input type="file"/>');
-        $fileListener.on('change', fileHandler.handler);
-        $fileListener.trigger('click');
-    };
-    FileSelectorComponent.prototype.render = function () {
-        var _this = this;
-        return React.createElement("div", null, React.createElement("input", {type: "number", value: this.state.page, onChange: function (e) { return _this.page(+e.target.value); }}), React.createElement("button", {className: "open", onClick: function () { return _this.open(); }}, "open"), React.createElement("img", {src: this.state.dataURL}));
-    };
-    return FileSelectorComponent;
-}(parcel_1.Good));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = FileSelectorComponent;
-
-},{"../constants/constants":3,"../libs/parcel":8,"../models/file-handler":9,"react":188}],2:[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var React = require("react");
-var parcel_1 = require("../libs/parcel");
-var WorkbookComponent = (function (_super) {
-    __extends(WorkbookComponent, _super);
-    function WorkbookComponent() {
-        _super.apply(this, arguments);
-    }
     WorkbookComponent.prototype.render = function () {
-        return React.createElement("div", null, "workbook");
+        var _this = this;
+        return React.createElement("div", null, React.createElement("input", {type: "number", value: this.state.page, onChange: function (e) { return _this.page(+e.target.value); }}), " ", React.createElement("img", {src: this.state.dataURL}));
     };
     return WorkbookComponent;
 }(parcel_1.Good));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = WorkbookComponent;
 
-},{"../libs/parcel":8,"react":188}],3:[function(require,module,exports){
+},{"../constants/constants":3,"../libs/parcel":8,"react":188}],3:[function(require,module,exports){
 "use strict";
 (function (Route) {
     Route[Route["FileSelector"] = 0] = "FileSelector";
@@ -125,7 +126,15 @@ var MainContext = (function (_super) {
     function MainContext() {
         _super.apply(this, arguments);
     }
+    MainContext.prototype.componentWillMount = function () {
+        _super.prototype.componentWillMount.call(this);
+        this.setState({
+            file: this.props.file,
+        });
+    };
     MainContext.prototype.listen = function (to) {
+        var _this = this;
+        to(null, 'file:set', function (file) { return _this.setState({ file: file }); });
     };
     MainContext.prototype.route = function (state) {
         this.routeChildren = this.props.children.filter(function (child) {
@@ -133,7 +142,7 @@ var MainContext = (function (_super) {
         });
     };
     MainContext.prototype.componentWillUpdate = function (props, state) {
-        this.route(state);
+        //this.route(state)
     };
     return MainContext;
 }(parcel_1.Parcel));
@@ -340,7 +349,7 @@ exports.Parcel = Parcel;
 var changeCase = require('change-case');
 var constants_1 = require("../constants/constants");
 var pdf_handler_1 = require("./pdf-handler");
-PDFJS.workerSrc = '/js/pdf.worker.js';
+PDFJS.workerSrc = './js/pdf.worker.js';
 var FileHandler = (function () {
     function FileHandler(callback) {
         this.callback = callback;
@@ -360,7 +369,7 @@ var FileHandler = (function () {
         get: function () {
             var _this = this;
             return function (e) {
-                var file = e.path[0].files[0];
+                var file = e.target.files[0];
                 var reader = new FileReader();
                 _this.type = _this.detectFileType(file.name);
                 if (_this.type === constants_1.FileType.PDF) {

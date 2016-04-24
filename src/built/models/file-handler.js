@@ -2,7 +2,7 @@
 var changeCase = require('change-case');
 var constants_1 = require("../constants/constants");
 var pdf_handler_1 = require("./pdf-handler");
-PDFJS.workerSrc = '/js/pdf.worker.js';
+PDFJS.workerSrc = './js/pdf.worker.js';
 var FileHandler = (function () {
     function FileHandler(callback) {
         this.callback = callback;
@@ -22,7 +22,7 @@ var FileHandler = (function () {
         get: function () {
             var _this = this;
             return function (e) {
-                var file = e.path[0].files[0];
+                var file = e.target.files[0];
                 var reader = new FileReader();
                 _this.type = _this.detectFileType(file.name);
                 if (_this.type === constants_1.FileType.PDF) {
