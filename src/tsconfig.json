@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "sourceMap": true,
+        "jsx" : "react",
+        "outDir" : "./built"
+    },
+    "exclude": [
+      "node_modules",
+      "gulp",
+      "typings/main.d.ts",
+      "typings/main",
+      "lib",
+      "built"
+    ]
+}
