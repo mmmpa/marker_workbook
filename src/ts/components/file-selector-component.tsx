@@ -10,7 +10,9 @@ declare const $:any;
 export default class FileSelectorComponent extends Good {
   componentWillMount() {
     this.setState({
-      file: this.props.file
+      file: this.props.file,
+      page: 1,
+      dataURL: null
     })
   }
 
@@ -21,15 +23,21 @@ export default class FileSelectorComponent extends Good {
     if (!file) {
       return null;
     }
-    if (file.type === FileType.PDF) {
 
+    if (file.type === FileType.PDF) {
+      file.pdf.page(1, (dataURL)=> this.setState({page: 1, file, dataURL}));
     } else {
-      return <img src={file.dataURL}/>;
+      this.setState({dataURL: file.dataURL});
     }
   }
 
+  page(page){
+    this.setState({page})
+    this.state.file.pdf.page(page, (dataURL)=> this.setState({dataURL}));
+  }
+
   open() {
-    let fileHandler = new FileHandler((file)=> this.setState({file}));
+    let fileHandler = new FileHandler((file)=> this.writeDisplay(file));
     let $fileListener = $('<input type="file"/>');
     $fileListener.on('change', fileHandler.handler);
     $fileListener.trigger('click');
@@ -37,8 +45,9 @@ export default class FileSelectorComponent extends Good {
 
   render() {
     return <div>
+      <input type="number" value={this.state.page} onChange={(e)=> this.page(+e.target.value)}/>
       <button className="open" onClick={()=> this.open()}>open</button>
-      {this.writeDisplay(this.state.file)}
+      <img src={this.state.dataURL}/>
     </div>
   }
 }
