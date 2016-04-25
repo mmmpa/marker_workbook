@@ -38,7 +38,7 @@ export abstract class Good<P, S> extends React.Component<P & GoodProps, S & Good
   }
 
   dispatch(event:string, ...args:any[]):boolean {
-    return this.props.emitter.emit(event, ...args);
+    return (this.emitter || this.props.emitter).emit(event, ...args);
   }
 
   activate() {
@@ -91,9 +91,14 @@ export abstract class Good<P, S> extends React.Component<P & GoodProps, S & Good
     this.debug('componentWillUnmount');
   }
 
-  relay(children) {
+  relayingProps(){
     let props:any = _.assign({emitter: this.emitter || this.props.emitter}, this.props, this.state);
     delete props.children;
+    return props;
+  }
+  
+  relay(children) {
+    let props:any = this.relayingProps();
 
     return children.map((child, key)=> React.cloneElement(child, _.assign(props, {key})));
   }

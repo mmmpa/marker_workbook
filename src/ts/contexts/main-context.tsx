@@ -1,4 +1,6 @@
 import {Parcel} from "../libs/parcel";
+import FileHandler from "../models/file-handler";
+import {AppState} from "../constants/constants";
 require("zepto/zepto.min");
 
 export default class MainContext extends Parcel {
@@ -6,12 +8,18 @@ export default class MainContext extends Parcel {
     super.componentWillMount();
 
     this.setState({
-      file: this.props.file,
+      file: this.props.file || null,
+      state: AppState.Ready
     })
   }
 
   listen(to) {
-    to(null, 'file:set', (file)=> this.setState({file}));
+    to(null, 'file:start', ()=> this.setState({file: null, state: AppState.Wait}));
+    to(null, 'file:set', (file)=> this.setFile(file));
+  }
+
+  setFile(file) {
+    this.setState({file, state: AppState.Ready});
   }
 
   route(state) {

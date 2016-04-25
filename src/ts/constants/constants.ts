@@ -5,6 +5,17 @@ export enum Route{
 }
 
 export enum FileType{
+  Unknown,
   Image,
   PDF
+}
+
+export enum AppState{
+  Ready,
+  Wait
+}
+
+export enum WorkbookState{
+  Ready,
+  Rendering
 }

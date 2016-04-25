@@ -3,6 +3,8 @@ var changeCase = require('change-case');
 var constants_1 = require("../constants/constants");
 var pdf_handler_1 = require("./pdf-handler");
 PDFJS.workerSrc = './js/pdf.worker.js';
+PDFJS.cMapUrl = "./cmaps/";
+PDFJS.cMapPacked = true;
 var FileHandler = (function () {
     function FileHandler(callback) {
         this.callback = callback;
@@ -18,20 +20,41 @@ var FileHandler = (function () {
                 return constants_1.FileType.Image;
         }
     };
+    Object.defineProperty(FileHandler.prototype, "name", {
+        get: function () {
+            return this.file.name;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FileHandler.prototype, "key", {
+        get: function () {
+            return [this.name, this.file.size, this.file.type].join('_');
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FileHandler.prototype, "isPDF", {
+        get: function () {
+            return !!this.pdf;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(FileHandler.prototype, "handler", {
         get: function () {
             var _this = this;
             return function (e) {
-                var file = e.target.files[0];
+                _this.file = e.target.files[0];
                 var reader = new FileReader();
-                _this.type = _this.detectFileType(file.name);
+                _this.type = _this.detectFileType(_this.file.name);
                 if (_this.type === constants_1.FileType.PDF) {
                     reader.addEventListener('load', _this.pdfReader);
-                    reader.readAsArrayBuffer(file);
+                    reader.readAsArrayBuffer(_this.file);
                 }
                 else {
                     reader.addEventListener('load', _this.imageReader);
-                    reader.readAsDataURL(file);
+                    reader.readAsDataURL(_this.file);
                 }
             };
         },

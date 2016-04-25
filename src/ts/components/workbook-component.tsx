@@ -2,40 +2,79 @@ import * as React from "react";
 import * as ReactDOM from 'react-dom';
 import {Good} from "../libs/parcel";
 import FileHandler from "../models/file-handler";
-import {FileType} from "../constants/constants";
+import {FileType, WorkbookState} from "../constants/constants";
 
 export default class WorkbookComponent extends Good {
-  componentWillMount() {
-    this.setState({});
-    this.componentWillReceiveProps(this.props)
-  }
-
-  componentWillReceiveProps(props) {
-    if (this.props.file !== props.file) {
-      this.initialize(props.file)
-    }
-  }
-
-  initialize(file?:FileHandler) {
-    if (!file) {
+  writeController(){
+    if(!this.props.file.isPDF){
       return null;
     }
 
-    if (file.type === FileType.PDF) {
-      file.pdf.page(1, (dataURL)=> this.setState({page: 1, file, dataURL}));
-    } else {
-      this.setState({dataURL: file.dataURL});
-    }
-  }
-
-  page(page) {
-    this.setState({page})
-    this.state.file.pdf.page(page, (dataURL)=> this.setState({dataURL}));
+    return <WorkbookPDFController {...this.relayingProps()}/>
   }
 
   render() {
+    if (!this.props.file) {
+      return <div>ロードされていません。</div>;
+    }
+
+    let {markers, dataURL} = this.props
+
     return <div>
-      <input type="number" value={this.state.page} onChange={(e)=> this.page(+e.target.value)}/> <img src={this.state.dataURL}/>
+      <div className="controller">
+        <WorkbookToolComponent {...this.relayingProps()}/>
+        {this.writeController()}
+      </div>
+      <WorkbookViewerComponent {...this.relayingProps()}/>
+    </div>
+  }
+}
+
+class WorkbookPDFController extends Good {
+  pageNext(n) {
+    this.dispatch('pdf:page', this.props.pageNumber + n);
+  }
+
+  writeRendering() {
+    if (!this.isRendering) {
+      return null;
+    }
+    return 'rendering';
+  }
+
+  get isRendering() {
+    return this.props.workbookState === WorkbookState.Rendering
+  }
+
+  render() {
+    let {pageNumber, pageCount, dataURL} = this.props;
+
+    return <section className="pdf-tool">
+      <div className="label"><label>{pageNumber}/{pageCount}</label></div>
+      <button className="previous" disabled={this.isRendering} onClick={()=> this.pageNext(-1)}>prev</button>
+      <button className="next" disabled={this.isRendering} onClick={()=> this.pageNext(+1)}>next</button>
+      {this.writeRendering()}
+    </section>
+  }
+}
+
+class WorkbookToolComponent extends Good {
+  render() {
+    return <div className="tool-area">
+      tools </div>
+  }
+}
+class WorkbookViewerComponent extends Good {
+  render() {
+    let {dataURL} = this.props;
+
+    return <div className="viewer-area">
+      <div className="container">
+        <div className="marker-area">
+          {this.props.markers}
+        </div>
+        <img src={dataURL}/>
+      </div>
     </div>
   }
 }

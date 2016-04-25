@@ -11,17 +11,37 @@ var PDFHandler = (function () {
         canvas.width = viewport.width;
         return { canvas: canvas, canvasContext: canvasContext };
     };
+    Object.defineProperty(PDFHandler.prototype, "pageCount", {
+        get: function () {
+            return this.pdf.numPages;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    PDFHandler.prototype.store = function (pageNumber, dataURL, viewport) {
+        var width = viewport.width, height = viewport.height;
+        this.pageStore[pageNumber] = { dataURL: dataURL, width: width, height: height };
+    };
     PDFHandler.prototype.page = function (n, callback) {
         var _this = this;
-        if (!!this.pageStore[n]) {
-            return callback(this.pageStore[n]);
+        var pageNumber = n;
+        if (n < 1) {
+            pageNumber = 1;
         }
-        this.pdf.getPage(n).then(function (page) {
+        else if (n > this.pageCount) {
+            pageNumber = this.pageCount;
+        }
+        var stored = this.pageStore[pageNumber];
+        if (!!stored) {
+            return callback(pageNumber, stored.dataURL);
+        }
+        this.pdf.getPage(pageNumber).then(function (page) {
             var viewport = page.getViewport(2);
             var _a = _this.setupCanvas(viewport), canvas = _a.canvas, canvasContext = _a.canvasContext;
             page.render({ canvasContext: canvasContext, viewport: viewport }).promise.then(function () {
-                _this.pageStore[n] = canvas.toDataURL();
-                callback(canvas.toDataURL());
+                var dataURL = canvas.toDataURL();
+                _this.store(pageNumber, dataURL, viewport);
+                callback(pageNumber, dataURL);
             });
         });
     };

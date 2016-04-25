@@ -7,29 +7,34 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var React = require("react");
 var parcel_1 = require("../libs/parcel");
-var file_handler_1 = require("../models/file-handler");
 var FileSelectorComponent = (function (_super) {
     __extends(FileSelectorComponent, _super);
     function FileSelectorComponent() {
         _super.apply(this, arguments);
     }
-    FileSelectorComponent.prototype.open = function () {
-        var _this = this;
-        var fileHandler = new file_handler_1.default(function (file) { return _this.dispatch('file:set', file); });
-        var $fileListener = $('<input type="file"/>');
-        $fileListener.bind('change', fileHandler.handler);
-        $fileListener.trigger('click');
-    };
     FileSelectorComponent.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", null, React.createElement("button", {className: "open", onClick: function () { return _this.open(); }}, "open"));
+        return React.createElement("div", null, React.createElement("button", {className: "open", onClick: function () { return _this.dispatch('file:open'); }}, "open"), React.createElement("div", {className: "information"}, React.createElement(FileInformationComponent, React.__spread({}, { file: this.props.file }))));
     };
     return FileSelectorComponent;
 }(parcel_1.Good));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = FileSelectorComponent;
+var FileInformationComponent = (function (_super) {
+    __extends(FileInformationComponent, _super);
+    function FileInformationComponent() {
+        _super.apply(this, arguments);
+    }
+    FileInformationComponent.prototype.render = function () {
+        if (!this.props.file) {
+            return null;
+        }
+        return React.createElement("div", {clannName: "file-information"}, React.createElement("section", {className: "file-name"}, "name:", this.props.file.name), React.createElement("section", {className: "file-key"}, "key:", this.props.file.key, "（localStorage保存時に使用）"));
+    };
+    return FileInformationComponent;
+}(React.Component));
 
-},{"../libs/parcel":8,"../models/file-handler":9,"react":188}],2:[function(require,module,exports){
+},{"../libs/parcel":8,"react":188}],2:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -44,40 +49,72 @@ var WorkbookComponent = (function (_super) {
     function WorkbookComponent() {
         _super.apply(this, arguments);
     }
-    WorkbookComponent.prototype.componentWillMount = function () {
-        this.setState({});
-        this.componentWillReceiveProps(this.props);
-    };
-    WorkbookComponent.prototype.componentWillReceiveProps = function (props) {
-        if (this.props.file !== props.file) {
-            this.initialize(props.file);
-        }
-    };
-    WorkbookComponent.prototype.initialize = function (file) {
-        var _this = this;
-        if (!file) {
+    WorkbookComponent.prototype.writeController = function () {
+        if (!this.props.file.isPDF) {
             return null;
         }
-        if (file.type === constants_1.FileType.PDF) {
-            file.pdf.page(1, function (dataURL) { return _this.setState({ page: 1, file: file, dataURL: dataURL }); });
-        }
-        else {
-            this.setState({ dataURL: file.dataURL });
-        }
-    };
-    WorkbookComponent.prototype.page = function (page) {
-        var _this = this;
-        this.setState({ page: page });
-        this.state.file.pdf.page(page, function (dataURL) { return _this.setState({ dataURL: dataURL }); });
+        return React.createElement(WorkbookPDFController, React.__spread({}, this.relayingProps()));
     };
     WorkbookComponent.prototype.render = function () {
-        var _this = this;
-        return React.createElement("div", null, React.createElement("input", {type: "number", value: this.state.page, onChange: function (e) { return _this.page(+e.target.value); }}), " ", React.createElement("img", {src: this.state.dataURL}));
+        if (!this.props.file) {
+            return React.createElement("div", null, "ロードされていません。");
+        }
+        var _a = this.props, markers = _a.markers, dataURL = _a.dataURL;
+        return React.createElement("div", null, React.createElement("div", {className: "controller"}, React.createElement(WorkbookToolComponent, React.__spread({}, this.relayingProps())), this.writeController()), React.createElement(WorkbookViewerComponent, React.__spread({}, this.relayingProps())));
     };
     return WorkbookComponent;
 }(parcel_1.Good));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = WorkbookComponent;
+var WorkbookPDFController = (function (_super) {
+    __extends(WorkbookPDFController, _super);
+    function WorkbookPDFController() {
+        _super.apply(this, arguments);
+    }
+    WorkbookPDFController.prototype.pageNext = function (n) {
+        this.dispatch('pdf:page', this.props.pageNumber + n);
+    };
+    WorkbookPDFController.prototype.writeRendering = function () {
+        if (!this.isRendering) {
+            return null;
+        }
+        return 'rendering';
+    };
+    Object.defineProperty(WorkbookPDFController.prototype, "isRendering", {
+        get: function () {
+            return this.props.workbookState === constants_1.WorkbookState.Rendering;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    WorkbookPDFController.prototype.render = function () {
+        var _this = this;
+        var _a = this.props, pageNumber = _a.pageNumber, pageCount = _a.pageCount, dataURL = _a.dataURL;
+        return React.createElement("section", {className: "pdf-tool"}, React.createElement("div", {className: "label"}, React.createElement("label", null, pageNumber, "/", pageCount)), React.createElement("button", {className: "previous", disabled: this.isRendering, onClick: function () { return _this.pageNext(-1); }}, "prev"), React.createElement("button", {className: "next", disabled: this.isRendering, onClick: function () { return _this.pageNext(+1); }}, "next"), this.writeRendering());
+    };
+    return WorkbookPDFController;
+}(parcel_1.Good));
+var WorkbookToolComponent = (function (_super) {
+    __extends(WorkbookToolComponent, _super);
+    function WorkbookToolComponent() {
+        _super.apply(this, arguments);
+    }
+    WorkbookToolComponent.prototype.render = function () {
+        return React.createElement("div", {className: "tool-area"}, "tools ");
+    };
+    return WorkbookToolComponent;
+}(parcel_1.Good));
+var WorkbookViewerComponent = (function (_super) {
+    __extends(WorkbookViewerComponent, _super);
+    function WorkbookViewerComponent() {
+        _super.apply(this, arguments);
+    }
+    WorkbookViewerComponent.prototype.render = function () {
+        var dataURL = this.props.dataURL;
+        return React.createElement("div", {className: "viewer-area"}, React.createElement("div", {className: "container"}, React.createElement("div", {className: "marker-area"}, this.props.markers), React.createElement("img", {src: dataURL})));
+    };
+    return WorkbookViewerComponent;
+}(parcel_1.Good));
 
 },{"../constants/constants":3,"../libs/parcel":8,"react":188}],3:[function(require,module,exports){
 "use strict";
@@ -87,10 +124,21 @@ exports.default = WorkbookComponent;
 })(exports.Route || (exports.Route = {}));
 var Route = exports.Route;
 (function (FileType) {
-    FileType[FileType["Image"] = 0] = "Image";
-    FileType[FileType["PDF"] = 1] = "PDF";
+    FileType[FileType["Unknown"] = 0] = "Unknown";
+    FileType[FileType["Image"] = 1] = "Image";
+    FileType[FileType["PDF"] = 2] = "PDF";
 })(exports.FileType || (exports.FileType = {}));
 var FileType = exports.FileType;
+(function (AppState) {
+    AppState[AppState["Ready"] = 0] = "Ready";
+    AppState[AppState["Wait"] = 1] = "Wait";
+})(exports.AppState || (exports.AppState = {}));
+var AppState = exports.AppState;
+(function (WorkbookState) {
+    WorkbookState[WorkbookState["Ready"] = 0] = "Ready";
+    WorkbookState[WorkbookState["Rendering"] = 1] = "Rendering";
+})(exports.WorkbookState || (exports.WorkbookState = {}));
+var WorkbookState = exports.WorkbookState;
 
 },{}],4:[function(require,module,exports){
 "use strict";
@@ -100,19 +148,33 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var parcel_1 = require("../libs/parcel");
+var file_handler_1 = require("../models/file-handler");
 var FileSelectorContext = (function (_super) {
     __extends(FileSelectorContext, _super);
     function FileSelectorContext() {
         _super.apply(this, arguments);
     }
+    FileSelectorContext.prototype.componentWillReceiveProps = function (props) {
+        console.log('selector', props);
+    };
     FileSelectorContext.prototype.listen = function (to) {
+        var _this = this;
+        to(null, 'file:open', function (file) { return _this.open(); });
+    };
+    FileSelectorContext.prototype.open = function () {
+        var _this = this;
+        this.dispatch('file:open:start');
+        var fileHandler = new file_handler_1.default(function (file) { return _this.dispatch('file:set', file); });
+        var $fileListener = $('<input type="file"/>');
+        $fileListener.bind('change', fileHandler.handler);
+        $fileListener.trigger('click');
     };
     return FileSelectorContext;
 }(parcel_1.Parcel));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = FileSelectorContext;
 
-},{"../libs/parcel":8}],5:[function(require,module,exports){
+},{"../libs/parcel":8,"../models/file-handler":9}],5:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -120,6 +182,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var parcel_1 = require("../libs/parcel");
+var constants_1 = require("../constants/constants");
 require("zepto/zepto.min");
 var MainContext = (function (_super) {
     __extends(MainContext, _super);
@@ -129,12 +192,17 @@ var MainContext = (function (_super) {
     MainContext.prototype.componentWillMount = function () {
         _super.prototype.componentWillMount.call(this);
         this.setState({
-            file: this.props.file,
+            file: this.props.file || null,
+            state: constants_1.AppState.Ready
         });
     };
     MainContext.prototype.listen = function (to) {
         var _this = this;
-        to(null, 'file:set', function (file) { return _this.setState({ file: file }); });
+        to(null, 'file:start', function () { return _this.setState({ file: null, state: constants_1.AppState.Wait }); });
+        to(null, 'file:set', function (file) { return _this.setFile(file); });
+    };
+    MainContext.prototype.setFile = function (file) {
+        this.setState({ file: file, state: constants_1.AppState.Ready });
     };
     MainContext.prototype.route = function (state) {
         this.routeChildren = this.props.children.filter(function (child) {
@@ -149,7 +217,7 @@ var MainContext = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = MainContext;
 
-},{"../libs/parcel":8,"zepto/zepto.min":198}],6:[function(require,module,exports){
+},{"../constants/constants":3,"../libs/parcel":8,"zepto/zepto.min":198}],6:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -157,19 +225,91 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var parcel_1 = require("../libs/parcel");
+var constants_1 = require("../constants/constants");
 var WorkbookContext = (function (_super) {
     __extends(WorkbookContext, _super);
     function WorkbookContext() {
         _super.apply(this, arguments);
     }
+    WorkbookContext.prototype.componentWillMount = function () {
+        _super.prototype.componentWillMount.call(this);
+        this.setState({
+            type: null,
+            pageNumber: 0,
+            pageCount: 0
+        });
+        this.componentWillReceiveProps(this.props);
+    };
+    WorkbookContext.prototype.componentWillReceiveProps = function (props) {
+        if (this.props.file !== props.file) {
+            this.initialize(props.file);
+        }
+    };
     WorkbookContext.prototype.listen = function (to) {
+        var _this = this;
+        to(null, 'pdf:page', function (n) { return _this.page(n); });
+    };
+    Object.defineProperty(WorkbookContext.prototype, "isLoaded", {
+        get: function () {
+            return !!this.props.file;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(WorkbookContext.prototype, "isPDF", {
+        get: function () {
+            return this.props.file.isPDF;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(WorkbookContext.prototype, "pdf", {
+        get: function () {
+            return this.props.file.pdf;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    WorkbookContext.prototype.initialize = function (file) {
+        var _this = this;
+        if (!file) {
+            return null;
+        }
+        if (file.isPDF) {
+            this.setState({ workbookState: constants_1.WorkbookState.Rendering });
+            file.pdf.page(1, function (pageNumber, dataURL) { return _this.setState({
+                workbookState: constants_1.WorkbookState.Ready,
+                type: constants_1.FileType.PDF,
+                pageCount: file.pdf.pageCount,
+                pageNumber: pageNumber,
+                dataURL: dataURL
+            }); });
+        }
+        else {
+            this.setState({
+                workbookState: constants_1.WorkbookState.Ready,
+                type: constants_1.FileType.Image,
+                pageCount: 0,
+                pageNumber: 0,
+                dataURL: file.dataURL
+            });
+        }
+    };
+    WorkbookContext.prototype.page = function (pageNumber) {
+        var _this = this;
+        this.setState({ workbookState: constants_1.WorkbookState.Rendering });
+        this.pdf.page(pageNumber, function (pageNumber, dataURL) { return _this.setState({
+            workbookState: constants_1.WorkbookState.Ready,
+            pageNumber: pageNumber,
+            dataURL: dataURL
+        }); });
     };
     return WorkbookContext;
 }(parcel_1.Parcel));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = WorkbookContext;
 
-},{"../libs/parcel":8}],7:[function(require,module,exports){
+},{"../constants/constants":3,"../libs/parcel":8}],7:[function(require,module,exports){
 /// <reference path="./typings/browser.d.ts" />
 "use strict";
 var React = require('react');
@@ -225,7 +365,7 @@ var Good = (function (_super) {
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        return (_a = this.props.emitter).emit.apply(_a, [event].concat(args));
+        return (_a = (this.emitter || this.props.emitter)).emit.apply(_a, [event].concat(args));
         var _a;
     };
     Good.prototype.activate = function () {
@@ -272,9 +412,13 @@ var Good = (function (_super) {
     Good.prototype.componentWillUnmount = function () {
         this.debug('componentWillUnmount');
     };
-    Good.prototype.relay = function (children) {
+    Good.prototype.relayingProps = function () {
         var props = _.assign({ emitter: this.emitter || this.props.emitter }, this.props, this.state);
         delete props.children;
+        return props;
+    };
+    Good.prototype.relay = function (children) {
+        var props = this.relayingProps();
         return children.map(function (child, key) { return React.cloneElement(child, _.assign(props, { key: key })); });
     };
     return Good;
@@ -350,6 +494,8 @@ var changeCase = require('change-case');
 var constants_1 = require("../constants/constants");
 var pdf_handler_1 = require("./pdf-handler");
 PDFJS.workerSrc = './js/pdf.worker.js';
+PDFJS.cMapUrl = "./cmaps/";
+PDFJS.cMapPacked = true;
 var FileHandler = (function () {
     function FileHandler(callback) {
         this.callback = callback;
@@ -365,20 +511,41 @@ var FileHandler = (function () {
                 return constants_1.FileType.Image;
         }
     };
+    Object.defineProperty(FileHandler.prototype, "name", {
+        get: function () {
+            return this.file.name;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FileHandler.prototype, "key", {
+        get: function () {
+            return [this.name, this.file.size, this.file.type].join('_');
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FileHandler.prototype, "isPDF", {
+        get: function () {
+            return !!this.pdf;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(FileHandler.prototype, "handler", {
         get: function () {
             var _this = this;
             return function (e) {
-                var file = e.target.files[0];
+                _this.file = e.target.files[0];
                 var reader = new FileReader();
-                _this.type = _this.detectFileType(file.name);
+                _this.type = _this.detectFileType(_this.file.name);
                 if (_this.type === constants_1.FileType.PDF) {
                     reader.addEventListener('load', _this.pdfReader);
-                    reader.readAsArrayBuffer(file);
+                    reader.readAsArrayBuffer(_this.file);
                 }
                 else {
                     reader.addEventListener('load', _this.imageReader);
-                    reader.readAsDataURL(file);
+                    reader.readAsDataURL(_this.file);
                 }
             };
         },
@@ -429,17 +596,37 @@ var PDFHandler = (function () {
         canvas.width = viewport.width;
         return { canvas: canvas, canvasContext: canvasContext };
     };
+    Object.defineProperty(PDFHandler.prototype, "pageCount", {
+        get: function () {
+            return this.pdf.numPages;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    PDFHandler.prototype.store = function (pageNumber, dataURL, viewport) {
+        var width = viewport.width, height = viewport.height;
+        this.pageStore[pageNumber] = { dataURL: dataURL, width: width, height: height };
+    };
     PDFHandler.prototype.page = function (n, callback) {
         var _this = this;
-        if (!!this.pageStore[n]) {
-            return callback(this.pageStore[n]);
+        var pageNumber = n;
+        if (n < 1) {
+            pageNumber = 1;
         }
-        this.pdf.getPage(n).then(function (page) {
+        else if (n > this.pageCount) {
+            pageNumber = this.pageCount;
+        }
+        var stored = this.pageStore[pageNumber];
+        if (!!stored) {
+            return callback(pageNumber, stored.dataURL);
+        }
+        this.pdf.getPage(pageNumber).then(function (page) {
             var viewport = page.getViewport(2);
             var _a = _this.setupCanvas(viewport), canvas = _a.canvas, canvasContext = _a.canvasContext;
             page.render({ canvasContext: canvasContext, viewport: viewport }).promise.then(function () {
-                _this.pageStore[n] = canvas.toDataURL();
-                callback(canvas.toDataURL());
+                var dataURL = canvas.toDataURL();
+                _this.store(pageNumber, dataURL, viewport);
+                callback(pageNumber, dataURL);
             });
         });
     };

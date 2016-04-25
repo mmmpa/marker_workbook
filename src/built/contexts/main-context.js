@@ -5,6 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var parcel_1 = require("../libs/parcel");
+var constants_1 = require("../constants/constants");
 require("zepto/zepto.min");
 var MainContext = (function (_super) {
     __extends(MainContext, _super);
@@ -14,12 +15,17 @@ var MainContext = (function (_super) {
     MainContext.prototype.componentWillMount = function () {
         _super.prototype.componentWillMount.call(this);
         this.setState({
-            file: this.props.file,
+            file: this.props.file || null,
+            state: constants_1.AppState.Ready
         });
     };
     MainContext.prototype.listen = function (to) {
         var _this = this;
-        to(null, 'file:set', function (file) { return _this.setState({ file: file }); });
+        to(null, 'file:start', function () { return _this.setState({ file: null, state: constants_1.AppState.Wait }); });
+        to(null, 'file:set', function (file) { return _this.setFile(file); });
+    };
+    MainContext.prototype.setFile = function (file) {
+        this.setState({ file: file, state: constants_1.AppState.Ready });
     };
     MainContext.prototype.route = function (state) {
         this.routeChildren = this.props.children.filter(function (child) {

@@ -12,38 +12,70 @@ var WorkbookComponent = (function (_super) {
     function WorkbookComponent() {
         _super.apply(this, arguments);
     }
-    WorkbookComponent.prototype.componentWillMount = function () {
-        this.setState({});
-        this.componentWillReceiveProps(this.props);
-    };
-    WorkbookComponent.prototype.componentWillReceiveProps = function (props) {
-        if (this.props.file !== props.file) {
-            this.initialize(props.file);
-        }
-    };
-    WorkbookComponent.prototype.initialize = function (file) {
-        var _this = this;
-        if (!file) {
+    WorkbookComponent.prototype.writeController = function () {
+        if (!this.props.file.isPDF) {
             return null;
         }
-        if (file.type === constants_1.FileType.PDF) {
-            file.pdf.page(1, function (dataURL) { return _this.setState({ page: 1, file: file, dataURL: dataURL }); });
-        }
-        else {
-            this.setState({ dataURL: file.dataURL });
-        }
-    };
-    WorkbookComponent.prototype.page = function (page) {
-        var _this = this;
-        this.setState({ page: page });
-        this.state.file.pdf.page(page, function (dataURL) { return _this.setState({ dataURL: dataURL }); });
+        return React.createElement(WorkbookPDFController, React.__spread({}, this.relayingProps()));
     };
     WorkbookComponent.prototype.render = function () {
-        var _this = this;
-        return React.createElement("div", null, React.createElement("input", {type: "number", value: this.state.page, onChange: function (e) { return _this.page(+e.target.value); }}), " ", React.createElement("img", {src: this.state.dataURL}));
+        if (!this.props.file) {
+            return React.createElement("div", null, "ロードされていません。");
+        }
+        var _a = this.props, markers = _a.markers, dataURL = _a.dataURL;
+        return React.createElement("div", null, React.createElement("div", {className: "controller"}, React.createElement(WorkbookToolComponent, React.__spread({}, this.relayingProps())), this.writeController()), React.createElement(WorkbookViewerComponent, React.__spread({}, this.relayingProps())));
     };
     return WorkbookComponent;
 }(parcel_1.Good));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = WorkbookComponent;
+var WorkbookPDFController = (function (_super) {
+    __extends(WorkbookPDFController, _super);
+    function WorkbookPDFController() {
+        _super.apply(this, arguments);
+    }
+    WorkbookPDFController.prototype.pageNext = function (n) {
+        this.dispatch('pdf:page', this.props.pageNumber + n);
+    };
+    WorkbookPDFController.prototype.writeRendering = function () {
+        if (!this.isRendering) {
+            return null;
+        }
+        return 'rendering';
+    };
+    Object.defineProperty(WorkbookPDFController.prototype, "isRendering", {
+        get: function () {
+            return this.props.workbookState === constants_1.WorkbookState.Rendering;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    WorkbookPDFController.prototype.render = function () {
+        var _this = this;
+        var _a = this.props, pageNumber = _a.pageNumber, pageCount = _a.pageCount, dataURL = _a.dataURL;
+        return React.createElement("section", {className: "pdf-tool"}, React.createElement("div", {className: "label"}, React.createElement("label", null, pageNumber, "/", pageCount)), React.createElement("button", {className: "previous", disabled: this.isRendering, onClick: function () { return _this.pageNext(-1); }}, "prev"), React.createElement("button", {className: "next", disabled: this.isRendering, onClick: function () { return _this.pageNext(+1); }}, "next"), this.writeRendering());
+    };
+    return WorkbookPDFController;
+}(parcel_1.Good));
+var WorkbookToolComponent = (function (_super) {
+    __extends(WorkbookToolComponent, _super);
+    function WorkbookToolComponent() {
+        _super.apply(this, arguments);
+    }
+    WorkbookToolComponent.prototype.render = function () {
+        return React.createElement("div", {className: "tool-area"}, "tools ");
+    };
+    return WorkbookToolComponent;
+}(parcel_1.Good));
+var WorkbookViewerComponent = (function (_super) {
+    __extends(WorkbookViewerComponent, _super);
+    function WorkbookViewerComponent() {
+        _super.apply(this, arguments);
+    }
+    WorkbookViewerComponent.prototype.render = function () {
+        var dataURL = this.props.dataURL;
+        return React.createElement("div", {className: "viewer-area"}, React.createElement("div", {className: "container"}, React.createElement("div", {className: "marker-area"}, this.props.markers), React.createElement("img", {src: dataURL})));
+    };
+    return WorkbookViewerComponent;
+}(parcel_1.Good));
 //# sourceMappingURL=workbook-component.js.map

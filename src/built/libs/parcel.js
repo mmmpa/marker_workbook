@@ -32,7 +32,7 @@ var Good = (function (_super) {
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        return (_a = this.props.emitter).emit.apply(_a, [event].concat(args));
+        return (_a = (this.emitter || this.props.emitter)).emit.apply(_a, [event].concat(args));
         var _a;
     };
     Good.prototype.activate = function () {
@@ -79,9 +79,13 @@ var Good = (function (_super) {
     Good.prototype.componentWillUnmount = function () {
         this.debug('componentWillUnmount');
     };
-    Good.prototype.relay = function (children) {
+    Good.prototype.relayingProps = function () {
         var props = _.assign({ emitter: this.emitter || this.props.emitter }, this.props, this.state);
         delete props.children;
+        return props;
+    };
+    Good.prototype.relay = function (children) {
+        var props = this.relayingProps();
         return children.map(function (child, key) { return React.cloneElement(child, _.assign(props, { key: key })); });
     };
     return Good;
