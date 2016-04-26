@@ -60,28 +60,87 @@ var WorkbookComponent = (function (_super) {
         return React.createElement(WorkbookPDFController, React.__spread({}, this.relayingProps()));
     };
     WorkbookComponent.prototype.onMouseDown = function (e) {
+        var _this = this;
         e.preventDefault();
         var _a = this.mousePosition(e), x = _a.x, y = _a.y;
         var isRight = e.nativeEvent.which === 3;
-        this.dispatch('workspace:press', x, y, isRight);
-        this.startDragCanvas(x, y, isRight);
+        this.setShortCut(function () { return _this.detectPressAction(isRight)(x, y); });
+    };
+    WorkbookComponent.prototype.setShortCut = function (callback) {
+        switch (true) {
+            case this.props.keyControl.isDown('Space'):
+                return this.setState({ shortCut: constants_1.ShortCut.Slide }, callback);
+            default:
+                return this.setState({ shortCut: null }, callback);
+        }
+    };
+    WorkbookComponent.prototype.detectPressAction = function (isRight) {
+        var _this = this;
+        if (isRight === void 0) { isRight = false; }
+        switch (true) {
+            case this.props.keyControl.isDown('Space'):
+                return function (x, y) { return _this.startDrag(x, y, isRight); };
+            default:
+                return function (x, y) { return _this.startDrawMarker(x, y); };
+        }
+    };
+    WorkbookComponent.prototype.startDrawMarker = function (startX, startY) {
+        var _this = this;
+        var offsetX = -this.props.page.pagePosition.x;
+        var offsetY = -this.props.page.pagePosition.y;
+        var marker = this.props.page.newMarker(startX + offsetX, startY + offsetY);
+        var move = function (e) {
+            var _a = _this.mousePosition(e), x = _a.x, y = _a.y;
+            marker.to(x + offsetX, y + offsetY);
+            _this.props.page.update();
+            _this.setState({});
+        };
+        var clear = function () {
+            $(window).off('mouseup', clear);
+            $(window).off('mousemove', move);
+        };
+        $(window).on('mousemove', move);
+        $(window).on('mouseup', clear);
+    };
+    WorkbookComponent.prototype.startDrag = function (startX, startY, isRight) {
+        var _this = this;
+        if (isRight === void 0) { isRight = false; }
+        var drag = this.detectDragAction(isRight);
+        var pre = { x: startX, y: startY };
+        var move = function (e) {
+            var _a = _this.mousePosition(e), x = _a.x, y = _a.y;
+            drag(startX, startY, pre.x, pre.y, x, y);
+            pre = { x: x, y: y };
+        };
+        var clear = function () {
+            $(window).off('mouseup', clear);
+            $(window).off('mousemove', move);
+        };
+        $(window).on('mousemove', move);
+        $(window).on('mouseup', clear);
+    };
+    WorkbookComponent.prototype.detectDragAction = function (isRight) {
+        var _this = this;
+        if (isRight === void 0) { isRight = false; }
+        switch (true) {
+            case this.state.shortCut === constants_1.ShortCut.Slide:
+                return isRight
+                    ? function (startX, startY, x, y, endX, endY) { return _this.slideSheet(x, y, endX, endY); }
+                    : function (startX, startY, x, y, endX, endY) { return _this.slidePage(x, y, endX, endY); };
+            default:
+                return function (startX, startY, x, y, endX, endY) { return _this.drawMarker(startX, startY, endX, endY, _this.rightColor); };
+        }
     };
     WorkbookComponent.prototype.onPressDouble = function (x, y) {
         this.dispatch('workspace:press:double', x, y);
     };
-    WorkbookComponent.prototype.startDragCanvas = function (startX, startY, isRight) {
-        var _this = this;
-        if (isRight === void 0) { isRight = false; }
-        var pre = { x: startX, y: startY };
-        var move = function (e) {
-            var _a = _this.mousePosition(e), x = _a.x, y = _a.y;
-            _this.dispatch('workspace:drag', startX, startY, pre.x, pre.y, x, y, isRight);
-            pre = { x: x, y: y };
-        };
-        $(window).on('mousemove', move);
-        $(window).on('mouseup', function () {
-            $(window).off('mousemove', move);
-        });
+    WorkbookComponent.prototype.slideSheet = function (x, y, endX, endY) {
+        this.props.page.moveSheet(endX - x, endY - y);
+        this.setState({});
+    };
+    WorkbookComponent.prototype.slidePage = function (x, y, endX, endY) {
+        this.props.page.movePage(endX - x, endY - y);
+        this.setState({});
     };
     WorkbookComponent.prototype.mousePosition = function (e) {
         var x = e.pageX - this.workspace.offsetLeft;
@@ -100,7 +159,7 @@ var WorkbookComponent = (function (_super) {
         if (!this.props.file) {
             return React.createElement("div", null, "ロードされていません。");
         }
-        return React.createElement("div", {className: "workbook-component", ref: "workspace"}, React.createElement("div", {className: "workbook-controller"}, React.createElement(WorkbookToolComponent, React.__spread({}, this.relayingProps())), this.writeController()), React.createElement("div", {className: "container", onMouseDown: function (e) { return _this.onMouseDown(e); }, onContextMenu: function (e) { return e.preventDefault(); }}, React.createElement(WorkbookViewerComponent, React.__spread({}, this.relayingProps()))));
+        return React.createElement("div", {className: "workbook-component", ref: "workspace"}, React.createElement("div", {className: "workbook-controller"}, React.createElement(WorkbookToolComponent, React.__spread({}, this.relayingProps())), this.writeController()), React.createElement("div", {className: "workbook-container", onMouseDown: function (e) { return _this.onMouseDown(e); }, onContextMenu: function (e) { return e.preventDefault(); }}, React.createElement(WorkbookViewerComponent, React.__spread({}, this.relayingProps()))));
     };
     return WorkbookComponent;
 }(parcel_1.Good));
@@ -155,7 +214,7 @@ var WorkbookViewerComponent = (function (_super) {
             return null;
         }
         var _b = page.pagePosition, x = _b.x, y = _b.y;
-        return React.createElement("div", {className: "viewer-area"}, React.createElement("div", {className: "workbook-area", style: { left: x, top: y }}, React.createElement("div", {className: "marker-area"}, React.createElement(SheetComponent, React.__spread({}, { page: page, size: size })), " ", React.createElement(MarkerComponent, React.__spread({}, { page: page }))), React.createElement("img", {src: dataURL})));
+        return React.createElement("div", {className: "viewer-area"}, React.createElement("div", {className: "workbook-area", style: { left: x, top: y }}, React.createElement("div", {className: "marker-area"}, React.createElement(MarkerComponent, React.__spread({}, { page: page })), React.createElement(SheetComponent, React.__spread({}, { page: page, size: size }))), React.createElement("img", {src: dataURL})));
     };
     return WorkbookViewerComponent;
 }(parcel_1.Good));
@@ -168,7 +227,7 @@ var SheetComponent = (function (_super) {
         var _a = this.props, page = _a.page, size = _a.size;
         var width = size.width, height = size.height;
         var _b = page.sheetPosition, x = _b.x, y = _b.y;
-        return React.createElement("div", {className: "sheet-area", style: { left: x, top: y, width: width, height: height }}, React.createElement("div", {className: "markers", style: { left: -x, top: -y }}, React.createElement(MarkerComponent, React.__spread({}, { page: page }))));
+        return React.createElement("div", {className: "sheet-area", style: { left: x, top: y, width: width, height: height }}, React.createElement("div", {className: "sheet"}), React.createElement("div", {className: "markers", style: { left: -x, top: -y }}, React.createElement(MarkerComponent, React.__spread({}, { page: page }))));
     };
     return SheetComponent;
 }(React.Component));
@@ -189,7 +248,7 @@ var MarkerComponent = (function (_super) {
     MarkerComponent.prototype.writeMarkers = function () {
         var markers = this.props.page.markers;
         return markers.map(function (marker) {
-            return React.createElement("div", {className: "marker", style: marker.css});
+            return React.createElement("div", {className: "marker", style: marker.wrapperCSS}, React.createElement("div", {className: "marker-draw", style: marker.innerCSS}, "marker"));
         });
     };
     MarkerComponent.prototype.render = function () {
@@ -351,64 +410,6 @@ var WorkbookContext = (function (_super) {
         to(null, 'tool:change:slide:sheet', function () { return _this.setState({ mode: constants_1.ToolMode.SlidingSheet }); });
         to(null, 'tool:change:draw:Marker', function () { return _this.setState({ mode: constants_1.ToolMode.DrawingMark }); });
         to(null, 'tool:change:delete:marker', function () { return _this.setState({ mode: constants_1.ToolMode.DeletingMark }); });
-        to(null, 'workspace:press', function (x, y, isRight) { return _this.pressWorkspace(x, y, isRight); });
-        to(null, 'workspace:drag', function (startX, startY, x, y, endX, endY, isRight) { return _this.dragWorkspace(startX, startY, x, y, endX, endY, isRight); });
-    };
-    WorkbookContext.prototype.pressWorkspace = function (x, y, isRight) {
-        var _this = this;
-        if (isRight === void 0) { isRight = false; }
-        this.setShortCut(function () { return _this.detectPressAction(isRight)(x, y); });
-    };
-    WorkbookContext.prototype.dragWorkspace = function (startX, startY, x, y, endX, endY, isRight) {
-        if (isRight === void 0) { isRight = false; }
-        this.detectDragAction(isRight)(startX, startY, x, y, endX, endY);
-    };
-    WorkbookContext.prototype.setShortCut = function (callback) {
-        switch (true) {
-            case this.props.keyControl.isDown('Space'):
-                return this.setState({ shortCut: constants_1.ShortCut.Slide }, callback);
-            default:
-                return this.setState({ shortCut: null }, callback);
-        }
-    };
-    WorkbookContext.prototype.detectPressAction = function (isRight) {
-        var _this = this;
-        if (isRight === void 0) { isRight = false; }
-        switch (this.state.mode) {
-            default:
-                return function () {
-                    var args = [];
-                    for (var _i = 0; _i < arguments.length; _i++) {
-                        args[_i - 0] = arguments[_i];
-                    }
-                    return null;
-                };
-                return isRight
-                    ? function (x, y) { return _this.draw(x, y, _this.rightColor); }
-                    : function (x, y) { return _this.draw(x, y, _this.leftColor); };
-        }
-    };
-    WorkbookContext.prototype.detectDragAction = function (isRight) {
-        var _this = this;
-        if (isRight === void 0) { isRight = false; }
-        switch (true) {
-            case this.state.shortCut === constants_1.ShortCut.Slide:
-                return isRight
-                    ? function (startX, startY, x, y, endX, endY) { return _this.slideSheet(x, y, endX, endY); }
-                    : function (startX, startY, x, y, endX, endY) { return _this.slidePage(x, y, endX, endY); };
-            default:
-                return function (x, y, endX, endY) { return _this.drawMarker(x, y, endX, endY, _this.rightColor); };
-        }
-    };
-    WorkbookContext.prototype.slideSheet = function (x, y, endX, endY) {
-        console.log('slide sheet');
-        this.state.page.moveSheet(endX - x, endY - y);
-        this.setState({});
-    };
-    WorkbookContext.prototype.slidePage = function (x, y, endX, endY) {
-        console.log('slide page');
-        this.state.page.movePage(endX - x, endY - y);
-        this.setState({});
     };
     Object.defineProperty(WorkbookContext.prototype, "isLoaded", {
         get: function () {
@@ -858,15 +859,30 @@ var Marker = (function (_super) {
         var endY = y + Math.sin(radian) * length;
         return { endX: endX, endY: endY };
     };
-    Object.defineProperty(Marker.prototype, "css", {
+    Marker.prototype.to = function (x, y) {
+        var moveX = x - this.x;
+        var moveY = y - this.y;
+        this.rotation = Math.atan2(moveY, moveX) * 180 / Math.PI;
+        this.length = Math.sqrt(moveX * moveX + moveY * moveY);
+    };
+    Object.defineProperty(Marker.prototype, "wrapperCSS", {
         get: function () {
             var _a = this, x = _a.x, y = _a.y, rotation = _a.rotation, length = _a.length, thickness = _a.thickness;
             return {
                 left: x,
-                top: y,
-                width: length,
-                height: thickness,
+                top: y - this.thickness / 2,
                 transform: "rotate(" + rotation + "deg)"
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Marker.prototype, "innerCSS", {
+        get: function () {
+            var _a = this, x = _a.x, y = _a.y, rotation = _a.rotation, length = _a.length, thickness = _a.thickness;
+            return {
+                width: length,
+                height: thickness
             };
         },
         enumerable: true,
@@ -897,11 +913,20 @@ var Page = (function (_super) {
     __extends(Page, _super);
     function Page() {
         _super.call(this);
-        this.pagePosition = { x: 0, y: 0 };
+        this.pagePosition = { x: 210, y: 50 };
         this.sheetPosition = { x: 0, y: 0 };
         this.markers = [new marker_1.default(0, 0, 100, 40, 0)];
         this.version = 0;
     }
+    Page.prototype.update = function () {
+        this.version++;
+    };
+    Page.prototype.newMarker = function (x, y, thickness) {
+        if (thickness === void 0) { thickness = 40; }
+        var newMarker = new marker_1.default(x, y, 0, thickness, 0);
+        this.markers.push(newMarker);
+        return newMarker;
+    };
     Page.prototype.moveSheet = function (moveX, moveY) {
         this.sheetPosition.x += moveX;
         this.sheetPosition.y += moveY;

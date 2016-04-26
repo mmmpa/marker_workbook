@@ -32,59 +32,6 @@ export default class WorkbookContext extends Parcel {
     to(null, 'tool:change:draw:Marker', ()=> this.setState({mode: ToolMode.DrawingMark}));
     to(null, 'tool:change:delete:marker', ()=> this.setState({mode: ToolMode.DeletingMark}));
 
-    to(null, 'workspace:press', (x, y, isRight)=> this.pressWorkspace(x, y, isRight));
-    to(null, 'workspace:drag', (startX, startY, x, y, endX, endY, isRight)=> this.dragWorkspace(startX, startY, x, y, endX, endY, isRight));
-  }
-
-  pressWorkspace(x, y, isRight = false) {
-    this.setShortCut(()=> this.detectPressAction(isRight)(x, y));
-  }
-
-  dragWorkspace(startX, startY, x, y, endX, endY, isRight = false) {
-    this.detectDragAction(isRight)(startX, startY, x, y, endX, endY);
-  }
-
-
-  setShortCut(callback) {
-    switch (true) {
-      case this.props.keyControl.isDown('Space'):
-        return this.setState({shortCut: ShortCut.Slide}, callback);
-      default:
-        return this.setState({shortCut: null}, callback)
-    }
-  }
-
-  detectPressAction(isRight = false) {
-    switch (this.state.mode) {
-      default:
-        return (...args)=> null
-        return isRight
-          ? (x, y)=> this.draw(x, y, this.rightColor)
-          : (x, y)=> this.draw(x, y, this.leftColor);
-    }
-  }
-
-  detectDragAction(isRight = false):(startX, startY, x, y, endX, endY)=> void {
-    switch (true) {
-      case this.state.shortCut === ShortCut.Slide:
-        return isRight
-          ? (startX, startY, x, y, endX, endY)=> this.slideSheet(x, y, endX, endY)
-          : (startX, startY, x, y, endX, endY)=> this.slidePage(x, y, endX, endY);
-      default:
-        return (x, y, endX, endY)=> this.drawMarker(x, y, endX, endY, this.rightColor)
-    }
-  }
-
-  slideSheet(x, y, endX, endY) {
-    console.log('slide sheet')
-    this.state.page.moveSheet(endX - x, endY - y);
-    this.setState({})
-  }
-
-  slidePage(x, y, endX, endY) {
-    console.log('slide page')
-    this.state.page.movePage(endX - x, endY - y);
-    this.setState({})
   }
 
   get isLoaded() {

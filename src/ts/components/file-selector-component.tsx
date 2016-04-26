@@ -6,7 +6,7 @@ declare const $:any;
 
 export default class FileSelectorComponent extends Good {
   open(e) {
-    .e.target.blur();
+    e.target.blur();
     this.dispatch('file:open');
   }
 

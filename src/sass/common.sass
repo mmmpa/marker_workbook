@@ -8,8 +8,10 @@ body
   bottom: 0
   right: 0
   overflow: hidden
+
 .workbook-component,
 .workbook-controller,
+.workbook-container,
 .file-selector-component,
 .viewer-area,
 .workbook-area,
@@ -21,14 +23,37 @@ body
   top: 0
   position: absolute
 
-.sheet-area
-  background: rgba(46, 204, 113, 0.2)
-  overflow: hidden
-  .marker
-    background: rgba(0, 0, 0, 1)
+.workbook-container,
+.workbook-component
+  margin: 0
+  padding: 0
+  top: 0
+  left: 0
+  bottom: 0
+  right: 0
+
+.workbook-container,
+  background: #fff
 
 .marker
+  transform-origin: left 50%
+
+.marker-draw
+  position: relative
   background: rgba(231, 76, 60, 0.2)
+
+.sheet-area
+  overflow: hidden
+  .marker-draw
+    z-index: 10
+    background: rgba(0, 0, 0, 1) !important
+  .sheet
+    position: absolute
+    background: rgba(46, 204, 113, 0.2)
+    top: 0
+    left: 0
+    bottom: 0
+    right: 0
 
 .workbook-component
   top: 0

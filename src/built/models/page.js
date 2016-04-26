@@ -10,11 +10,20 @@ var Page = (function (_super) {
     __extends(Page, _super);
     function Page() {
         _super.call(this);
-        this.pagePosition = { x: 0, y: 0 };
+        this.pagePosition = { x: 210, y: 50 };
         this.sheetPosition = { x: 0, y: 0 };
         this.markers = [new marker_1.default(0, 0, 100, 40, 0)];
         this.version = 0;
     }
+    Page.prototype.update = function () {
+        this.version++;
+    };
+    Page.prototype.newMarker = function (x, y, thickness) {
+        if (thickness === void 0) { thickness = 40; }
+        var newMarker = new marker_1.default(x, y, 0, thickness, 0);
+        this.markers.push(newMarker);
+        return newMarker;
+    };
     Page.prototype.moveSheet = function (moveX, moveY) {
         this.sheetPosition.x += moveX;
         this.sheetPosition.y += moveY;

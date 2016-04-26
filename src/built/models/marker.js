@@ -21,15 +21,30 @@ var Marker = (function (_super) {
         var endY = y + Math.sin(radian) * length;
         return { endX: endX, endY: endY };
     };
-    Object.defineProperty(Marker.prototype, "css", {
+    Marker.prototype.to = function (x, y) {
+        var moveX = x - this.x;
+        var moveY = y - this.y;
+        this.rotation = Math.atan2(moveY, moveX) * 180 / Math.PI;
+        this.length = Math.sqrt(moveX * moveX + moveY * moveY);
+    };
+    Object.defineProperty(Marker.prototype, "wrapperCSS", {
         get: function () {
             var _a = this, x = _a.x, y = _a.y, rotation = _a.rotation, length = _a.length, thickness = _a.thickness;
             return {
                 left: x,
-                top: y,
-                width: length,
-                height: thickness,
+                top: y - this.thickness / 2,
                 transform: "rotate(" + rotation + "deg)"
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Marker.prototype, "innerCSS", {
+        get: function () {
+            var _a = this, x = _a.x, y = _a.y, rotation = _a.rotation, length = _a.length, thickness = _a.thickness;
+            return {
+                width: length,
+                height: thickness
             };
         },
         enumerable: true,

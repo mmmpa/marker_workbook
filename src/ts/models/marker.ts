@@ -13,14 +13,28 @@ export default class Marker extends IDMan {
     return {endX, endY};
   }
 
-  get css() {
+  to(x, y) {
+    let moveX = x - this.x;
+    let moveY = y - this.y;
+
+    this.rotation = Math.atan2(moveY, moveX) * 180 / Math.PI;
+    this.length = Math.sqrt(moveX * moveX + moveY * moveY);
+  }
+
+  get wrapperCSS() {
     let {x, y, rotation, length, thickness} = this;
     return {
       left: x,
-      top: y,
-      width: length,
-      height: thickness,
+      top: y - this.thickness / 2,
       transform: `rotate(${rotation}deg)`
+    }
+  }
+
+  get innerCSS() {
+    let {x, y, rotation, length, thickness} = this;
+    return {
+      width: length,
+      height: thickness
     }
   }
 

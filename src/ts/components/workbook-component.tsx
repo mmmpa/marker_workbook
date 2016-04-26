@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from 'react-dom';
 import {Good} from "../libs/parcel";
 import FileHandler from "../models/file-handler";
-import {FileType, WorkbookState} from "../constants/constants";
+import {FileType, WorkbookState, ShortCut} from "../constants/constants";
 import Marker from "../models/marker";
 
 export default class WorkbookComponent extends Good {
@@ -19,27 +19,91 @@ export default class WorkbookComponent extends Good {
     let {x, y} = this.mousePosition(e);
     let isRight = e.nativeEvent.which === 3;
 
-    this.dispatch('workspace:press', x, y, isRight);
-    this.startDragCanvas(x, y, isRight);
+    this.setShortCut(()=> this.detectPressAction(isRight)(x, y));
+  }
+
+  setShortCut(callback) {
+    switch (true) {
+      case this.props.keyControl.isDown('Space'):
+        return this.setState({shortCut: ShortCut.Slide}, callback);
+      default:
+        return this.setState({shortCut: null}, callback)
+    }
+  }
+
+  detectPressAction(isRight = false) {
+    switch (true) {
+      case this.props.keyControl.isDown('Space'):
+        return (x, y)=> this.startDrag(x, y, isRight);
+      default:
+        return (x, y)=> this.startDrawMarker(x, y);
+    }
+  }
+
+  startDrawMarker(startX, startY) {
+    let offsetX =  -this.props.page.pagePosition.x
+    let offsetY =  -this.props.page.pagePosition.y
+    let marker = this.props.page.newMarker(startX + offsetX, startY + offsetY);
+
+    let move = (e:MouseEvent)=> {
+      let {x, y} = this.mousePosition(e);
+      marker.to(x + offsetX, y + offsetY);
+      this.props.page.update()
+      this.setState({});
+    };
+
+    let clear = ()=> {
+      $(window).off('mouseup', clear);
+      $(window).off('mousemove', move);
+    };
+
+    $(window).on('mousemove', move);
+    $(window).on('mouseup', clear);
+  }
+
+  startDrag(startX, startY, isRight = false) {
+    let drag = this.detectDragAction(isRight);
+
+    let pre = {x: startX, y: startY};
+
+    let move = (e:MouseEvent)=> {
+      let {x, y} = this.mousePosition(e);
+      drag(startX, startY, pre.x, pre.y, x, y);
+      pre = {x, y}
+    };
+
+    let clear = ()=> {
+      $(window).off('mouseup', clear);
+      $(window).off('mousemove', move);
+    };
+
+    $(window).on('mousemove', move);
+    $(window).on('mouseup', clear);
+  }
+
+  detectDragAction(isRight = false):(startX, startY, x, y, endX, endY)=> void {
+    switch (true) {
+      case this.state.shortCut === ShortCut.Slide:
+        return isRight
+          ? (startX, startY, x, y, endX, endY)=> this.slideSheet(x, y, endX, endY)
+          : (startX, startY, x, y, endX, endY)=> this.slidePage(x, y, endX, endY);
+      default:
+        return (startX, startY, x, y, endX, endY)=> this.drawMarker(startX, startY, endX, endY, this.rightColor)
+    }
   }
 
   onPressDouble(x, y) {
     this.dispatch('workspace:press:double', x, y);
   }
 
-  startDragCanvas(startX, startY, isRight = false) {
-    let pre = {x: startX, y: startY};
+  slideSheet(x, y, endX, endY) {
+    this.props.page.moveSheet(endX - x, endY - y);
+    this.setState({})
+  }
 
-    let move = (e:MouseEvent)=> {
-      let {x, y} = this.mousePosition(e);
-      this.dispatch('workspace:drag', startX, startY, pre.x, pre.y, x, y, isRight);
-      pre = {x, y}
-    };
-
-    $(window).on('mousemove', move);
-    $(window).on('mouseup', ()=> {
-      $(window).off('mousemove', move);
-    });
+  slidePage(x, y, endX, endY) {
+    this.props.page.movePage(endX - x, endY - y);
+    this.setState({})
   }
 
   mousePosition(e:MouseEvent) {
@@ -62,7 +126,7 @@ export default class WorkbookComponent extends Good {
       <div className="workbook-controller">
         <WorkbookToolComponent {...this.relayingProps()}/>{this.writeController()}
       </div>
-      <div className="container" onMouseDown={(e)=> this.onMouseDown(e) } onContextMenu={(e)=> e.preventDefault()}>
+      <div className="workbook-container" onMouseDown={(e)=> this.onMouseDown(e) } onContextMenu={(e)=> e.preventDefault()}>
         <WorkbookViewerComponent {...this.relayingProps()}/>
       </div>
     </div>
@@ -117,7 +181,8 @@ class WorkbookViewerComponent extends Good {
     return <div className="viewer-area">
       <div className="workbook-area" style={{left: x, top: y}}>
         <div className="marker-area">
-          <SheetComponent {...{page, size}}/> <MarkerComponent {...{page}}/>
+          <MarkerComponent {...{page}}/>
+          <SheetComponent {...{page, size}}/>
         </div>
         <img src={dataURL}/>
       </div>
@@ -132,6 +197,7 @@ class SheetComponent extends React.Component {
     let {x, y} = page.sheetPosition;
 
     return <div className="sheet-area" style={{left: x, top: y, width, height}}>
+      <div className="sheet"></div>
       <div className="markers" style={{left: -x, top: -y}}>
         <MarkerComponent {...{page}}/>
       </div>
@@ -156,7 +222,9 @@ class MarkerComponent extends React.Component {
     let {markers} = this.props.page;
 
     return markers.map((marker:Marker)=> {
-      return <div className="marker" style={marker.css}/>
+      return <div className="marker" style={marker.wrapperCSS}>
+        <div className="marker-draw" style={marker.innerCSS}>marker</div>
+      </div>
     })
   }
 
