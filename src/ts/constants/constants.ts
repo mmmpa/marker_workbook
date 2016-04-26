@@ -19,3 +19,15 @@ export enum WorkbookState{
   Ready,
   Rendering
 }
+
+export enum ToolMode{
+  SlidingPaper,
+  SlidingSheet,
+  DrawingMark,
+  DeletingMark,
+}
+
+export enum ShortCut{
+  Slide,
+  Draw
+}

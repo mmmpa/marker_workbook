@@ -1,6 +1,7 @@
 import {Parcel} from "../libs/parcel";
 import FileHandler from "../models/file-handler";
 import {AppState} from "../constants/constants";
+import KeyControl from "../models/key-control";
 require("zepto/zepto.min");
 
 export default class MainContext extends Parcel {
@@ -9,7 +10,8 @@ export default class MainContext extends Parcel {
 
     this.setState({
       file: this.props.file || null,
-      state: AppState.Ready
+      state: AppState.Ready,
+      keyControl: new KeyControl()
     })
   }
 

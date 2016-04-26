@@ -19,10 +19,10 @@ export default class PDFHandler {
 
   store(pageNumber, dataURL, viewport) {
     let {width, height} = viewport;
-    this.pageStore[pageNumber] = {dataURL, width, height};
+    this.pageStore[pageNumber] = {dataURL, size: {width, height}};
   }
 
-  page(n, callback:(pageNumber, dataURL)=>void) {
+  page(n, callback:(pageNumber, size, dataURL)=>void) {
     let pageNumber = n;
     if (n < 1) {
       pageNumber = 1;
@@ -32,7 +32,7 @@ export default class PDFHandler {
 
     let stored = this.pageStore[pageNumber];
     if (!!stored) {
-      return callback(pageNumber, stored.dataURL);
+      return callback(pageNumber, stored.size, stored.dataURL);
     }
 
     this.pdf.getPage(pageNumber).then((page)=> {
@@ -42,7 +42,7 @@ export default class PDFHandler {
       page.render({canvasContext, viewport}).promise.then(()=> {
         let dataURL = canvas.toDataURL();
         this.store(pageNumber, dataURL, viewport);
-        callback(pageNumber, dataURL);
+        callback(pageNumber, {width: viewport.width, height: viewport.height}, dataURL);
       });
     })
   }

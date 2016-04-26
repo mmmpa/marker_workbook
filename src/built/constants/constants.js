@@ -20,4 +20,16 @@ var AppState = exports.AppState;
     WorkbookState[WorkbookState["Rendering"] = 1] = "Rendering";
 })(exports.WorkbookState || (exports.WorkbookState = {}));
 var WorkbookState = exports.WorkbookState;
+(function (ToolMode) {
+    ToolMode[ToolMode["SlidingPaper"] = 0] = "SlidingPaper";
+    ToolMode[ToolMode["SlidingSheet"] = 1] = "SlidingSheet";
+    ToolMode[ToolMode["DrawingMark"] = 2] = "DrawingMark";
+    ToolMode[ToolMode["DeletingMark"] = 3] = "DeletingMark";
+})(exports.ToolMode || (exports.ToolMode = {}));
+var ToolMode = exports.ToolMode;
+(function (ShortCut) {
+    ShortCut[ShortCut["Slide"] = 0] = "Slide";
+    ShortCut[ShortCut["Draw"] = 1] = "Draw";
+})(exports.ShortCut || (exports.ShortCut = {}));
+var ShortCut = exports.ShortCut;
 //# sourceMappingURL=constants.js.map

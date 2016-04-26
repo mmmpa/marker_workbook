@@ -6,6 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var parcel_1 = require("../libs/parcel");
 var constants_1 = require("../constants/constants");
+var key_control_1 = require("../models/key-control");
 require("zepto/zepto.min");
 var MainContext = (function (_super) {
     __extends(MainContext, _super);
@@ -16,7 +17,8 @@ var MainContext = (function (_super) {
         _super.prototype.componentWillMount.call(this);
         this.setState({
             file: this.props.file || null,
-            state: constants_1.AppState.Ready
+            state: constants_1.AppState.Ready,
+            keyControl: new key_control_1.default()
         });
     };
     MainContext.prototype.listen = function (to) {

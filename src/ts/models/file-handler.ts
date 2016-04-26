@@ -9,8 +9,11 @@ PDFJS.cMapPacked = true;
 
 export default class FileHandler {
   public type:FileType;
+
   public dataURL:string;
-  public typedArray:any;
+  public width:number;
+  public height:number;
+
   public pdf:any;
   private file:File;
 
@@ -72,7 +75,13 @@ export default class FileHandler {
   get imageReader() {
     return (e)=> {
       this.dataURL = e.target.result;
-      this.callback(this);
+      let img = new Image();
+      img.addEventListener('load', ({target})=> {
+        this.width = target.width;
+        this.height = target.height;
+        this.callback(this);
+      });
+      img.src = this.dataURL;
     }
   }
 }

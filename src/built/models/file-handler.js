@@ -80,7 +80,14 @@ var FileHandler = (function () {
             var _this = this;
             return function (e) {
                 _this.dataURL = e.target.result;
-                _this.callback(_this);
+                var img = new Image();
+                img.addEventListener('load', function (_a) {
+                    var target = _a.target;
+                    _this.width = target.width;
+                    _this.height = target.height;
+                    _this.callback(_this);
+                });
+                img.src = _this.dataURL;
             };
         },
         enumerable: true,

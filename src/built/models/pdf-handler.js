@@ -20,7 +20,7 @@ var PDFHandler = (function () {
     });
     PDFHandler.prototype.store = function (pageNumber, dataURL, viewport) {
         var width = viewport.width, height = viewport.height;
-        this.pageStore[pageNumber] = { dataURL: dataURL, width: width, height: height };
+        this.pageStore[pageNumber] = { dataURL: dataURL, size: { width: width, height: height } };
     };
     PDFHandler.prototype.page = function (n, callback) {
         var _this = this;
@@ -33,7 +33,7 @@ var PDFHandler = (function () {
         }
         var stored = this.pageStore[pageNumber];
         if (!!stored) {
-            return callback(pageNumber, stored.dataURL);
+            return callback(pageNumber, stored.size, stored.dataURL);
         }
         this.pdf.getPage(pageNumber).then(function (page) {
             var viewport = page.getViewport(2);
@@ -41,7 +41,7 @@ var PDFHandler = (function () {
             page.render({ canvasContext: canvasContext, viewport: viewport }).promise.then(function () {
                 var dataURL = canvas.toDataURL();
                 _this.store(pageNumber, dataURL, viewport);
-                callback(pageNumber, dataURL);
+                callback(pageNumber, { width: viewport.width, height: viewport.height }, dataURL);
             });
         });
     };
