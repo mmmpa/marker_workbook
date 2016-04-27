@@ -15,6 +15,7 @@ export default class WorkbookComponent extends Good {
   }
 
   onMouseDown(e:MouseEvent) {
+    console.log(e.target, e.currentTarget)
     e.preventDefault();
     let {x, y} = this.mousePosition(e);
     let isRight = e.nativeEvent.which === 3;

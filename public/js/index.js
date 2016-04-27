@@ -61,6 +61,7 @@ var WorkbookComponent = (function (_super) {
     };
     WorkbookComponent.prototype.onMouseDown = function (e) {
         var _this = this;
+        console.log(e.target, e.currentTarget);
         e.preventDefault();
         var _a = this.mousePosition(e), x = _a.x, y = _a.y;
         var isRight = e.nativeEvent.which === 3;
