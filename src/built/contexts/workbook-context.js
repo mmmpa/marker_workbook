@@ -35,6 +35,9 @@ var WorkbookContext = (function (_super) {
         to(null, 'tool:change:slide:sheet', function () { return _this.setState({ mode: constants_1.ToolMode.SlidingSheet }); });
         to(null, 'tool:change:draw:Marker', function () { return _this.setState({ mode: constants_1.ToolMode.DrawingMark }); });
         to(null, 'tool:change:delete:marker', function () { return _this.setState({ mode: constants_1.ToolMode.DeletingMark }); });
+        to(null, 'workbook:save', function () {
+            _this.dispatch('workbook:save:json', _this.state.workbook.forJSON);
+        });
     };
     Object.defineProperty(WorkbookContext.prototype, "isLoaded", {
         get: function () {
@@ -65,7 +68,7 @@ var WorkbookContext = (function (_super) {
         if (file.isPDF) {
             this.setState({ workbookState: constants_1.WorkbookState.Rendering });
             file.pdf.page(1, function (pageNumber, size, dataURL) {
-                var workbook = new workbook_1.default(file.pdf.pageCount);
+                var workbook = new workbook_1.default(file.key, file.pdf.pageCount);
                 _this.setState({
                     workbookState: constants_1.WorkbookState.Ready,
                     type: constants_1.FileType.PDF,
@@ -79,7 +82,7 @@ var WorkbookContext = (function (_super) {
             });
         }
         else {
-            var workbook = new workbook_1.default(1);
+            var workbook = new workbook_1.default(file.key, 1);
             this.setState({
                 workbookState: constants_1.WorkbookState.Ready,
                 type: constants_1.FileType.Image,

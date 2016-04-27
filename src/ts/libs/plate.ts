@@ -9,7 +9,6 @@ export default class Plate {
 
   private _initialize() {
     let raw = window.localStorage.getItem(this._name);
-    console.log(raw)
     this._raw = raw ? JSON.parse(raw) : {};
   }
 

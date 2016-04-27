@@ -32,9 +32,6 @@ body
   bottom: 0
   right: 0
 
-.workbook-container,
-  background: #fff
-
 .marker
   transform-origin: left 50%
 
@@ -46,7 +43,7 @@ body
   overflow: hidden
   .marker-draw
     z-index: 10
-    background: rgba(0, 0, 0, 1) !important
+    background: rgba(0, 0, 0, 1)
   .sheet
     position: absolute
     background: rgba(46, 204, 113, 0.2)
@@ -69,7 +66,14 @@ body
   overflow: hidden
   background: rgba(236, 240, 241, 1.0)
   z-index: 200
-
+  .information
+    display: inline-block
+    padding: 0 0 0 20px
+  .file-information,
+  .file-name,
+  .file-key
+    display: inline-block
+    padding: 0 20px 0 0
 .workbook-controller
   width: 200px
   top: 0

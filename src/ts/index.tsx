@@ -12,10 +12,12 @@ import WorkbookComponent from "./components/workbook-component";
 import FileSelectorComponent from "./components/file-selector-component";
 
 class MarkerWorkbook {
-  static run(dom) {
+  static run(dom, firstDataURI, firstWorkbookData) {
+
+
     ReactDOM.render(
       <article className="dot-body">
-        <MainContext>
+        <MainContext {...{firstDataURI, firstWorkbookData}}>
           <FileSelectorContext route={Route.FileSelector}>
             <FileSelectorComponent/>
           </FileSelectorContext>
@@ -28,4 +30,4 @@ class MarkerWorkbook {
   }
 }
 
-MarkerWorkbook.run(document.getElementById('workbook'))
+window.MarkerWorkbook = MarkerWorkbook;

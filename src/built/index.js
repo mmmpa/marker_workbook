@@ -11,10 +11,10 @@ var file_selector_component_1 = require("./components/file-selector-component");
 var MarkerWorkbook = (function () {
     function MarkerWorkbook() {
     }
-    MarkerWorkbook.run = function (dom) {
-        ReactDOM.render(React.createElement("article", {className: "dot-body"}, React.createElement(main_context_1.default, null, React.createElement(file_selector_context_1.default, {route: constants_1.Route.FileSelector}, React.createElement(file_selector_component_1.default, null)), React.createElement(workbook_context_1.default, {route: constants_1.Route.Workbook}, React.createElement(workbook_component_1.default, null)))), dom);
+    MarkerWorkbook.run = function (dom, firstDataURI, firstWorkbookData) {
+        ReactDOM.render(React.createElement("article", {className: "dot-body"}, React.createElement(main_context_1.default, React.__spread({}, { firstDataURI: firstDataURI, firstWorkbookData: firstWorkbookData }), React.createElement(file_selector_context_1.default, {route: constants_1.Route.FileSelector}, React.createElement(file_selector_component_1.default, null)), React.createElement(workbook_context_1.default, {route: constants_1.Route.Workbook}, React.createElement(workbook_component_1.default, null)))), dom);
     };
     return MarkerWorkbook;
 }());
-MarkerWorkbook.run(document.getElementById('workbook'));
+window.MarkerWorkbook = MarkerWorkbook;
 //# sourceMappingURL=index.js.map

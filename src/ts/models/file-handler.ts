@@ -17,12 +17,24 @@ export default class FileHandler {
   public pdf:any;
   private file:File;
 
-  constructor(public callback) {
+  constructor(public callback, fileName = null) {
+    if(fileName){
+      this.file = new File([''], fileName);
+      this.type = this.detectFileType(this.file.name);
+      if (this.type === FileType.PDF) {
+        PDFJS.getDocument(fileName).then((pdf)=> {
+          this.pdf = new PDFHandler(pdf);
+          this.callback(this);
+        })
+      } else {
 
+      }
+    }
   }
 
   getExtension(fileName) {
-    return changeCase.lowerCase(fileName.split('.').pop());
+    let ex = fileName.replace(/\?.*/, '').replace(/#.*/, '').replace(/.*\./, '');
+    return changeCase.lowerCase(ex);
   }
 
   detectFileType(fileName) {
@@ -39,26 +51,30 @@ export default class FileHandler {
   }
 
   get key() {
-    return [this.name, this.file.size, this.file.type].join('_');
+    return [this.name, this.file.size, this.file.type || this.type].join('_');
   }
 
   get isPDF():boolean {
     return !!this.pdf
   }
 
-  get handler() {
+  get inputHandler() {
     return (e)=> {
-      this.file = e.target.files[0];
-      let reader = new FileReader();
-      this.type = this.detectFileType(this.file.name);
+      this.handleFile(e.target.files[0]);
+    }
+  }
 
-      if (this.type === FileType.PDF) {
-        reader.addEventListener('load', this.pdfReader);
-        reader.readAsArrayBuffer(this.file);
-      } else {
-        reader.addEventListener('load', this.imageReader);
-        reader.readAsDataURL(this.file);
-      }
+  handleFile(file){
+    this.file = file;
+    let reader = new FileReader();
+    this.type = this.detectFileType(file.name);
+
+    if (this.type === FileType.PDF) {
+      reader.addEventListener('load', this.pdfReader);
+      reader.readAsArrayBuffer(file);
+    } else {
+      reader.addEventListener('load', this.imageReader);
+      reader.readAsDataURL(file);
     }
   }
 

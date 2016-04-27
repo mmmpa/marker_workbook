@@ -42,8 +42,8 @@ export default class WorkbookComponent extends Good {
   }
 
   startDrawMarker(startX, startY) {
-    let offsetX =  -this.props.page.pagePosition.x
-    let offsetY =  -this.props.page.pagePosition.y
+    let offsetX = -this.props.page.pagePosition.x
+    let offsetY = -this.props.page.pagePosition.y
     let marker = this.props.page.newMarker(startX + offsetX, startY + offsetY);
 
     let move = (e:MouseEvent)=> {
@@ -165,7 +165,8 @@ class WorkbookPDFController extends Good {
 class WorkbookToolComponent extends Good {
   render() {
     return <div className="tool-area">
-      tools </div>
+      <button onClick={()=> this.dispatch('workbook:save')}>save</button>
+    </div>
   }
 }
 
@@ -182,8 +183,7 @@ class WorkbookViewerComponent extends Good {
     return <div className="viewer-area">
       <div className="workbook-area" style={{left: x, top: y}}>
         <div className="marker-area">
-          <MarkerComponent {...{page}}/>
-          <SheetComponent {...{page, size}}/>
+          <MarkerComponent {...{page}}/> <SheetComponent {...{page, size}}/>
         </div>
         <img src={dataURL}/>
       </div>

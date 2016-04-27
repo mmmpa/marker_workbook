@@ -12,7 +12,7 @@ export default class Page extends IDMan {
     super();
   }
 
-  update(){
+  update() {
     this.version++;
   }
 
@@ -30,5 +30,14 @@ export default class Page extends IDMan {
   movePage(moveX, moveY) {
     this.pagePosition.x += moveX;
     this.pagePosition.y += moveY;
+  }
+
+  get forJSON() {
+    let {pagePosition, sheetPosition, markers} = this;
+    return {
+      pagePosition,
+      sheetPosition,
+      markers: markers.map((marker)=> marker.forJSON)
+    }
   }
 }

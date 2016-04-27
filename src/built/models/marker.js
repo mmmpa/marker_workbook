@@ -57,6 +57,14 @@ var Marker = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Marker.prototype, "forJSON", {
+        get: function () {
+            var _a = this, x = _a.x, y = _a.y, length = _a.length, rotation = _a.rotation;
+            return { x: x, y: y, length: length, rotation: rotation };
+        },
+        enumerable: true,
+        configurable: true
+    });
     return Marker;
 }(id_man_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });

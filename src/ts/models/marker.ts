@@ -41,4 +41,10 @@ export default class Marker extends IDMan {
   get radian() {
     return this.rotation * Math.PI / 180;
   }
+
+  get forJSON() {
+    let {x, y, length, rotation} = this;
+
+    return {x, y, length, rotation}
+  }
 }

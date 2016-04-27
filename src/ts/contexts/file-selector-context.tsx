@@ -15,7 +15,7 @@ export default class FileSelectorContext extends Parcel {
     this.dispatch('file:open:start');
     let fileHandler = new FileHandler((file)=> this.dispatch('file:set', file));
     let $fileListener = $('<input type="file"/>');
-    $fileListener.bind('change', fileHandler.handler);
+    $fileListener.bind('change', fileHandler.inputHandler);
     $fileListener.trigger('click');
   }
 }

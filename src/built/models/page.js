@@ -32,6 +32,18 @@ var Page = (function (_super) {
         this.pagePosition.x += moveX;
         this.pagePosition.y += moveY;
     };
+    Object.defineProperty(Page.prototype, "forJSON", {
+        get: function () {
+            var _a = this, pagePosition = _a.pagePosition, sheetPosition = _a.sheetPosition, markers = _a.markers;
+            return {
+                pagePosition: pagePosition,
+                sheetPosition: sheetPosition,
+                markers: markers.map(function (marker) { return marker.forJSON; })
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
     return Page;
 }(id_man_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });

@@ -2,22 +2,40 @@ import {Parcel} from "../libs/parcel";
 import FileHandler from "../models/file-handler";
 import {AppState} from "../constants/constants";
 import KeyControl from "../models/key-control";
+import WorkbookRecord from "../records/workbook-record";
 require("zepto/zepto.min");
 
 export default class MainContext extends Parcel {
   componentWillMount() {
     super.componentWillMount();
 
-    this.setState({
-      file: this.props.file || null,
+    let defaultState = {
+      file: null,
       state: AppState.Ready,
       keyControl: new KeyControl()
-    })
+    };
+    
+    
+    let {firstDataURI, firstWorkbookData} = this.props;
+    if(firstDataURI){
+      defaultState.state = AppState.Wait;
+      this.setState(defaultState, ()=>{
+        new FileHandler((file)=> {
+          if(firstWorkbookData){
+            new WorkbookRecord(file.key).write('workbook', firstWorkbookData);
+          }
+          this.dispatch('file:set', file);
+        }, firstDataURI);
+      });
+    }else{
+      this.setState(defaultState);
+    }
   }
 
   listen(to) {
     to(null, 'file:start', ()=> this.setState({file: null, state: AppState.Wait}));
     to(null, 'file:set', (file)=> this.setFile(file));
+    to(null, 'workbook:save:json', (json)=> console.log(json));
   }
 
   setFile(file) {

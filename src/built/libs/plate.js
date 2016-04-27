@@ -7,7 +7,6 @@ var Plate = (function () {
     }
     Plate.prototype._initialize = function () {
         var raw = window.localStorage.getItem(this._name);
-        console.log(raw);
         this._raw = raw ? JSON.parse(raw) : {};
     };
     Plate.prototype.reload = function () {

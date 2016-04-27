@@ -3,11 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <title>Document</title>
-  <link rel="stylesheet" href="./css/common.css">
+  <link rel="stylesheet" href="/css/common.css">
 </head>
 <body>
 <article id="workbook"></article>
-<script src="./js/pdf.js"></script>
-<script src="./js/index.js"></script>
+<script src="/js/pdf.js"></script>
+<script src="/js/index.js"></script>
+<script>
+  var dom = document.getElementById('workbook');
+  var sampleURI = '/sample/sample.pdf?' + new Date().getTime();
+  var workbookData = {
+    pages: [
+      {
+        pagePosition: {x: 210, y: 50},
+        sheetPosition: {x: 0, y: 0},
+        markers: [
+          {x: 129, y: 254, radian: 0, length: 0, rotation: 0},
+          {x: 337, y: 455, radian: 0, length: 0, rotation: 0},
+          {x: 261, y: 485, length: 310, rotation: 0},
+          {x: 37, y: 135, radian: 0, length: 231, rotation: 2},
+          {x: 100, y: 1409, length: 609, rotation: 0}
+        ]
+      },
+      {
+        pagePosition: {x: 210, y: 50},
+        sheetPosition: {x: 0, y: 0},
+        markers: [
+          {x: 116, y: 580, radian: 0, length: 620, rotation: 0},
+          {x: 118, y: 1148, length: 309, rotation: 7},
+          {x: 106, y: 1281, length: 253, rotation: 3},
+          {x: 111, y: 1394, length: 240, rotation: 1}
+        ]
+      },
+      {
+        pagePosition: {x: 210, y: 50},
+        sheetPosition: {x: 0, y: 0},
+        markers: []
+      },
+      {
+        pagePosition: {x: 210, y: 50},
+        sheetPosition: {x: 0, y: 0},
+        markers: []
+      }
+    ]
+  };
+
+  MarkerWorkbook.run(dom, sampleURI, workbookData);
+</script>
 </body>
 </html>

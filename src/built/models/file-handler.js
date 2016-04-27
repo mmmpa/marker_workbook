@@ -6,11 +6,26 @@ PDFJS.workerSrc = './js/pdf.worker.js';
 PDFJS.cMapUrl = "./cmaps/";
 PDFJS.cMapPacked = true;
 var FileHandler = (function () {
-    function FileHandler(callback) {
+    function FileHandler(callback, fileName) {
+        var _this = this;
+        if (fileName === void 0) { fileName = null; }
         this.callback = callback;
+        if (fileName) {
+            this.file = new File([''], fileName);
+            this.type = this.detectFileType(this.file.name);
+            if (this.type === constants_1.FileType.PDF) {
+                PDFJS.getDocument(fileName).then(function (pdf) {
+                    _this.pdf = new pdf_handler_1.default(pdf);
+                    _this.callback(_this);
+                });
+            }
+            else {
+            }
+        }
     }
     FileHandler.prototype.getExtension = function (fileName) {
-        return changeCase.lowerCase(fileName.split('.').pop());
+        var ex = fileName.replace(/\?.*/, '').replace(/#.*/, '').replace(/.*\./, '');
+        return changeCase.lowerCase(ex);
     };
     FileHandler.prototype.detectFileType = function (fileName) {
         switch (this.getExtension(fileName)) {
@@ -29,7 +44,7 @@ var FileHandler = (function () {
     });
     Object.defineProperty(FileHandler.prototype, "key", {
         get: function () {
-            return [this.name, this.file.size, this.file.type].join('_');
+            return [this.name, this.file.size, this.file.type || this.type].join('_');
         },
         enumerable: true,
         configurable: true
@@ -41,26 +56,29 @@ var FileHandler = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(FileHandler.prototype, "handler", {
+    Object.defineProperty(FileHandler.prototype, "inputHandler", {
         get: function () {
             var _this = this;
             return function (e) {
-                _this.file = e.target.files[0];
-                var reader = new FileReader();
-                _this.type = _this.detectFileType(_this.file.name);
-                if (_this.type === constants_1.FileType.PDF) {
-                    reader.addEventListener('load', _this.pdfReader);
-                    reader.readAsArrayBuffer(_this.file);
-                }
-                else {
-                    reader.addEventListener('load', _this.imageReader);
-                    reader.readAsDataURL(_this.file);
-                }
+                _this.handleFile(e.target.files[0]);
             };
         },
         enumerable: true,
         configurable: true
     });
+    FileHandler.prototype.handleFile = function (file) {
+        this.file = file;
+        var reader = new FileReader();
+        this.type = this.detectFileType(file.name);
+        if (this.type === constants_1.FileType.PDF) {
+            reader.addEventListener('load', this.pdfReader);
+            reader.readAsArrayBuffer(file);
+        }
+        else {
+            reader.addEventListener('load', this.imageReader);
+            reader.readAsDataURL(file);
+        }
+    };
     Object.defineProperty(FileHandler.prototype, "pdfReader", {
         get: function () {
             var _this = this;

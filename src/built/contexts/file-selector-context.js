@@ -23,7 +23,7 @@ var FileSelectorContext = (function (_super) {
         this.dispatch('file:open:start');
         var fileHandler = new file_handler_1.default(function (file) { return _this.dispatch('file:set', file); });
         var $fileListener = $('<input type="file"/>');
-        $fileListener.bind('change', fileHandler.handler);
+        $fileListener.bind('change', fileHandler.inputHandler);
         $fileListener.trigger('click');
     };
     return FileSelectorContext;

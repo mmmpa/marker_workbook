@@ -159,7 +159,8 @@ var WorkbookToolComponent = (function (_super) {
         _super.apply(this, arguments);
     }
     WorkbookToolComponent.prototype.render = function () {
-        return React.createElement("div", {className: "tool-area"}, "tools ");
+        var _this = this;
+        return React.createElement("div", {className: "tool-area"}, React.createElement("button", {onClick: function () { return _this.dispatch('workbook:save'); }}, "save"));
     };
     return WorkbookToolComponent;
 }(parcel_1.Good));
@@ -174,7 +175,7 @@ var WorkbookViewerComponent = (function (_super) {
             return null;
         }
         var _b = page.pagePosition, x = _b.x, y = _b.y;
-        return React.createElement("div", {className: "viewer-area"}, React.createElement("div", {className: "workbook-area", style: { left: x, top: y }}, React.createElement("div", {className: "marker-area"}, React.createElement(MarkerComponent, React.__spread({}, { page: page })), React.createElement(SheetComponent, React.__spread({}, { page: page, size: size }))), React.createElement("img", {src: dataURL})));
+        return React.createElement("div", {className: "viewer-area"}, React.createElement("div", {className: "workbook-area", style: { left: x, top: y }}, React.createElement("div", {className: "marker-area"}, React.createElement(MarkerComponent, React.__spread({}, { page: page })), " ", React.createElement(SheetComponent, React.__spread({}, { page: page, size: size }))), React.createElement("img", {src: dataURL})));
     };
     return WorkbookViewerComponent;
 }(parcel_1.Good));

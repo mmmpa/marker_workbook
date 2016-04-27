@@ -32,6 +32,9 @@ export default class WorkbookContext extends Parcel {
     to(null, 'tool:change:draw:Marker', ()=> this.setState({mode: ToolMode.DrawingMark}));
     to(null, 'tool:change:delete:marker', ()=> this.setState({mode: ToolMode.DeletingMark}));
 
+    to(null, 'workbook:save', ()=> {
+      this.dispatch('workbook:save:json', this.state.workbook.forJSON)
+    });
   }
 
   get isLoaded() {
@@ -54,7 +57,7 @@ export default class WorkbookContext extends Parcel {
     if (file.isPDF) {
       this.setState({workbookState: WorkbookState.Rendering})
       file.pdf.page(1, (pageNumber, size, dataURL)=> {
-        let workbook = new Workbook(file.pdf.pageCount);
+        let workbook = new Workbook(file.key, file.pdf.pageCount);
         this.setState({
           workbookState: WorkbookState.Ready,
           type: FileType.PDF,
@@ -67,7 +70,7 @@ export default class WorkbookContext extends Parcel {
         })
       });
     } else {
-      let workbook = new Workbook(1);
+      let workbook = new Workbook(file.key, 1);
       this.setState({
         workbookState: WorkbookState.Ready,
         type: FileType.Image,
