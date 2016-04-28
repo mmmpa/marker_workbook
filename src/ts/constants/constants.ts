@@ -25,6 +25,8 @@ export enum ToolMode{
   SlidingSheet,
   DrawingMark,
   DeletingMark,
+  OpenFile,
+  
 }
 
 export enum ShortCut{

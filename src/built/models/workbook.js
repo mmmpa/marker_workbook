@@ -11,13 +11,22 @@ var workbook_record_1 = require("../records/workbook-record");
 var Workbook = (function (_super) {
     __extends(Workbook, _super);
     function Workbook(key, pageCount) {
+        var _this = this;
         _super.call(this);
         this.key = key;
         this.pageCount = pageCount;
         this.pages = _.times(pageCount, function () { return new page_1.default(); });
         var stored = new workbook_record_1.default(key).read('workbook');
         if (stored) {
-            console.log(stored);
+            this.pages = stored.pages.map(function (pageData) {
+                return page_1.default.fromJSON(pageData);
+            });
+            if (this.page.length < pageCount) {
+                _.times(pageCount - this.page.length, function () { return _this.pages.push(new page_1.default()); });
+            }
+        }
+        else {
+            this.pages = _.times(pageCount, function () { return new page_1.default(); });
         }
     }
     Workbook.prototype.page = function (n) {

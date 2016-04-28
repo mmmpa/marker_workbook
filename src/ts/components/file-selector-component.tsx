@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from 'react-dom';
 import {Good} from "../libs/parcel";
+import Fa from "../libs/fa";
 
 declare const $:any;
 
@@ -12,7 +13,10 @@ export default class FileSelectorComponent extends Good {
 
   render() {
     return <div className="file-selector-component">
-      <button className="open" onClick={(e)=> this.open(e)}>open</button>
+      <button className="icon-button open" onClick={(e)=> this.open(e)}>
+        <div><Fa icon="folder-open-o"/></div>
+        <p>ファイルを開く</p>
+      </button>
       <div className="information">
         <FileInformationComponent {...{file: this.props.file}}/>
       </div>

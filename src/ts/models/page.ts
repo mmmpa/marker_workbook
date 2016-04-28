@@ -4,7 +4,7 @@ import IDMan from "./id-man";
 export default class Page extends IDMan {
   pagePosition:any = {x: 210, y: 50};
   sheetPosition:any = {x: 0, y: 0};
-  markers:Marker[] = [new Marker(0, 0, 100, 40, 0)];
+  markers:Marker[] = [];
 
   version:number = 0;
 
@@ -16,7 +16,7 @@ export default class Page extends IDMan {
     this.version++;
   }
 
-  newMarker(x, y, thickness = 40):Marker {
+  newMarker(x, y, thickness = 40, length = 0, rotation = 0):Marker {
     let newMarker = new Marker(x, y, 0, thickness, 0);
     this.markers.push(newMarker);
     return newMarker;
@@ -39,5 +39,14 @@ export default class Page extends IDMan {
       sheetPosition,
       markers: markers.map((marker)=> marker.forJSON)
     }
+  }
+
+  static fromJSON(data) {
+    let page = new Page();
+    page.pagePosition = data.pagePosition;
+    page.sheetPosition = data.sheetPosition;
+    page.markers = data.markers.map((markerData)=> Marker.fromJSON(markerData));
+
+    return page;
   }
 }

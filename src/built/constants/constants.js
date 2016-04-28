@@ -25,6 +25,7 @@ var WorkbookState = exports.WorkbookState;
     ToolMode[ToolMode["SlidingSheet"] = 1] = "SlidingSheet";
     ToolMode[ToolMode["DrawingMark"] = 2] = "DrawingMark";
     ToolMode[ToolMode["DeletingMark"] = 3] = "DeletingMark";
+    ToolMode[ToolMode["OpenFile"] = 4] = "OpenFile";
 })(exports.ToolMode || (exports.ToolMode = {}));
 var ToolMode = exports.ToolMode;
 (function (ShortCut) {

@@ -32,4 +32,4 @@ var MarkerViewerComponent = (function (_super) {
 }(React.Component));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = MarkerViewerComponent;
-//# sourceMappingURL=marker-component.js.map
+//# sourceMappingURL=marker-viewer-component.js.map

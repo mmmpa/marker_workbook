@@ -6,6 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var React = require("react");
 var parcel_1 = require("../libs/parcel");
+var fa_1 = require("../libs/fa");
 var FileSelectorComponent = (function (_super) {
     __extends(FileSelectorComponent, _super);
     function FileSelectorComponent() {
@@ -17,7 +18,7 @@ var FileSelectorComponent = (function (_super) {
     };
     FileSelectorComponent.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", {className: "file-selector-component"}, React.createElement("button", {className: "open", onClick: function (e) { return _this.open(e); }}, "open"), React.createElement("div", {className: "information"}, React.createElement(FileInformationComponent, React.__spread({}, { file: this.props.file }))));
+        return React.createElement("div", {className: "file-selector-component"}, React.createElement("button", {className: "icon-button open", onClick: function (e) { return _this.open(e); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "folder-open-o"})), React.createElement("p", null, "ファイルを開く")), React.createElement("div", {className: "information"}, React.createElement(FileInformationComponent, React.__spread({}, { file: this.props.file }))));
     };
     return FileSelectorComponent;
 }(parcel_1.Good));

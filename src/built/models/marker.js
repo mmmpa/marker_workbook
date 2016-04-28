@@ -65,6 +65,10 @@ var Marker = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Marker.fromJSON = function (data) {
+        var x = data.x, y = data.y, length = data.length, thickness = data.thickness, rotation = data.rotation;
+        return new Marker(x, y, length, thickness, rotation);
+    };
     return Marker;
 }(id_man_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });

@@ -12,14 +12,16 @@ var Page = (function (_super) {
         _super.call(this);
         this.pagePosition = { x: 210, y: 50 };
         this.sheetPosition = { x: 0, y: 0 };
-        this.markers = [new marker_1.default(0, 0, 100, 40, 0)];
+        this.markers = [];
         this.version = 0;
     }
     Page.prototype.update = function () {
         this.version++;
     };
-    Page.prototype.newMarker = function (x, y, thickness) {
+    Page.prototype.newMarker = function (x, y, thickness, length, rotation) {
         if (thickness === void 0) { thickness = 40; }
+        if (length === void 0) { length = 0; }
+        if (rotation === void 0) { rotation = 0; }
         var newMarker = new marker_1.default(x, y, 0, thickness, 0);
         this.markers.push(newMarker);
         return newMarker;
@@ -44,6 +46,13 @@ var Page = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Page.fromJSON = function (data) {
+        var page = new Page();
+        page.pagePosition = data.pagePosition;
+        page.sheetPosition = data.sheetPosition;
+        page.markers = data.markers.map(function (markerData) { return marker_1.default.fromJSON(markerData); });
+        return page;
+    };
     return Page;
 }(id_man_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });

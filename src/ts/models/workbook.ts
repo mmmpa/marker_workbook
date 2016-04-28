@@ -12,8 +12,15 @@ export default class Workbook extends IDMan {
     this.pages = _.times(pageCount, ()=> new Page());
 
     let stored = new WorkbookRecord(key).read('workbook');
-    if(stored){
-      console.log(stored)
+    if (stored) {
+      this.pages = stored.pages.map((pageData)=> {
+        return Page.fromJSON(pageData);
+      });
+      if (this.page.length < pageCount) {
+        _.times(pageCount - this.page.length, ()=> this.pages.push(new Page()))
+      }
+    } else {
+      this.pages = _.times(pageCount, ()=> new Page());
     }
   }
 
@@ -21,7 +28,7 @@ export default class Workbook extends IDMan {
     return this.pages[n - 1];
   }
 
-  get forJSON(){
+  get forJSON() {
     return {
       pages: this.pages.map((page)=> page.forJSON)
     }
