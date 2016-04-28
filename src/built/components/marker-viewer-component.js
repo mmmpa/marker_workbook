@@ -5,6 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var React = require("react");
+var parcel_1 = require("../libs/parcel");
 var MarkerViewerComponent = (function (_super) {
     __extends(MarkerViewerComponent, _super);
     function MarkerViewerComponent() {
@@ -20,16 +21,17 @@ var MarkerViewerComponent = (function (_super) {
         this.setState({ version: props.page.version });
     };
     MarkerViewerComponent.prototype.writeMarkers = function () {
+        var _this = this;
         var markers = this.props.page.markers;
         return markers.map(function (marker) {
-            return React.createElement("div", {className: "marker", style: marker.wrapperCSS}, React.createElement("div", {className: "marker-draw", style: marker.innerCSS}, " "));
+            return React.createElement("div", {className: "marker", style: marker.wrapperCSS, onMouseDown: function (e) { return _this.dispatch('marker:click', marker, e.nativeEvent.which === 3); }}, React.createElement("div", {className: "marker-draw", style: marker.innerCSS}, " "));
         });
     };
     MarkerViewerComponent.prototype.render = function () {
         return React.createElement("div", {className: "marker-area"}, this.writeMarkers());
     };
     return MarkerViewerComponent;
-}(React.Component));
+}(parcel_1.Good));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = MarkerViewerComponent;
 //# sourceMappingURL=marker-viewer-component.js.map

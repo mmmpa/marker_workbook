@@ -20,7 +20,7 @@ var WorkbookPDFController = (function (_super) {
         if (!this.isRendering) {
             return null;
         }
-        return React.createElement(fa_1.default, {icon: "spinner", animation: "pulse"});
+        return React.createElement("p", {className: "rendering"}, React.createElement(fa_1.default, {icon: "spinner", animation: "pulse"}));
     };
     Object.defineProperty(WorkbookPDFController.prototype, "isRendering", {
         get: function () {

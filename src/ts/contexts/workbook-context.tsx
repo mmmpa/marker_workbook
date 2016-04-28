@@ -32,9 +32,35 @@ export default class WorkbookContext extends Parcel {
     to(null, 'tool:change:draw:Marker', ()=> this.setState({mode: ToolMode.DrawingMark}));
     to(null, 'tool:change:delete:marker', ()=> this.setState({mode: ToolMode.DeletingMark}));
 
+    to(null, 'marker:click', (marker, isRight)=> this.selectMarker(marker, isRight));
+
     to(null, 'workbook:save', ()=> {
       this.dispatch('workbook:save:json', this.state.workbook.forJSON)
     });
+  }
+
+  selectMarker(marker, isRight){
+    let {keyControl} = this.props
+    let {mode} = this.state;
+    
+    if(keyControl.isDown('Space')){
+      return;
+    }
+
+    if(mode !== ToolMode.DrawingMark && mode !== ToolMode.DeletingMark){
+      return;
+    }
+
+    if(mode === ToolMode.DrawingMark && !isRight){
+      return;
+    }
+
+    if(mode === ToolMode.DeletingMark && isRight){
+      return;
+    }
+
+    this.state.page.removeMarker(marker);
+    this.setState({});
   }
 
   get isLoaded() {

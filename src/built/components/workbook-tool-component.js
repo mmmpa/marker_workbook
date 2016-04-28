@@ -17,7 +17,6 @@ var WorkbookToolComponent = (function (_super) {
     }
     WorkbookToolComponent.prototype.classesFor = function (tool) {
         var mode = this.props.mode;
-        console.log(mode);
         return classSet({
             'icon-button': true,
             'active-button': mode === tool

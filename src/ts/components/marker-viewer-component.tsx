@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import {Good} from "../libs/parcel";
 import Marker from "../models/marker";
 
-export default class MarkerViewerComponent extends React.Component {
+export default class MarkerViewerComponent extends Good {
   componentWillMount() {
     this.componentWillReceiveProps(this.props)
   }
@@ -20,7 +20,7 @@ export default class MarkerViewerComponent extends React.Component {
     let {markers} = this.props.page;
 
     return markers.map((marker:Marker)=> {
-      return <div className="marker" style={marker.wrapperCSS}>
+      return <div className="marker" style={marker.wrapperCSS} onMouseDown={(e)=> this.dispatch('marker:click', marker, e.nativeEvent.which === 3)}>
         <div className="marker-draw" style={marker.innerCSS}>&nbsp;</div>
       </div>
     })

@@ -10,7 +10,6 @@ const classSet = ReactAddons.classSet;
 export default class WorkbookToolComponent extends Good {
   classesFor(tool:ToolMode) {
     let {mode} = this.props;
-    console.log(mode)
     return classSet({
       'icon-button': true,
       'active-button': mode === tool

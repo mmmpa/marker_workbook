@@ -22,6 +22,11 @@ export default class Page extends IDMan {
     return newMarker;
   }
 
+  removeMarker(marker) {
+    this.markers = _.filter(this.markers, (m)=> m.id !== marker.id);
+    this.update();
+  }
+
   moveSheet(moveX, moveY) {
     this.sheetPosition.x += moveX;
     this.sheetPosition.y += moveY;

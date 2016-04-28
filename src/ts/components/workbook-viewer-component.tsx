@@ -18,7 +18,7 @@ export default class WorkbookViewerComponent extends Good {
     return <div className="viewer-area">
       <div className="workbook-area" style={{left: x, top: y}}>
         <div className="marker-area">
-          <MarkerViewerComponent {...{page}}/> <SheetComponent {...{page, size}}/>
+          <MarkerViewerComponent {...this.relayingProps()} {...{page}}/> <SheetComponent {...this.relayingProps()} {...{page, size}}/>
         </div>
         <img src={dataURL}/>
       </div>

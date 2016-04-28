@@ -16,28 +16,41 @@ var WorkbookComponent = (function (_super) {
         _super.apply(this, arguments);
     }
     WorkbookComponent.prototype.onMouseDown = function (e) {
-        var _this = this;
         e.preventDefault();
+        var target = e.target;
         var _a = this.mousePosition(e), x = _a.x, y = _a.y;
         var isRight = e.nativeEvent.which === 3;
-        this.setShortCut(function () { return _this.detectPressAction(isRight)(x, y); });
-    };
-    WorkbookComponent.prototype.setShortCut = function (callback) {
-        switch (true) {
-            case this.props.keyControl.isDown('Space'):
-                return this.setState({ shortCut: constants_1.ShortCut.Slide }, callback);
-            default:
-                return this.setState({ shortCut: null }, callback);
-        }
+        this.detectPressAction(isRight)(x, y, target);
     };
     WorkbookComponent.prototype.detectPressAction = function (isRight) {
         var _this = this;
         if (isRight === void 0) { isRight = false; }
+        var _a = this.props, mode = _a.mode, keyControl = _a.keyControl;
         switch (true) {
-            case this.props.keyControl.isDown('Space'):
+            case keyControl.isDown('Space') || mode === constants_1.ToolMode.SlidingPaper:
                 return function (x, y) { return _this.startDrag(x, y, isRight); };
+            case mode === constants_1.ToolMode.SlidingSheet:
+                return function (x, y) { return _this.startDrag(x, y, !isRight); };
+            case mode === constants_1.ToolMode.DeletingMark:
+                return isRight
+                    ? function (x, y) { return _this.startDrawMarker(x, y); }
+                    : function () {
+                        var args = [];
+                        for (var _i = 0; _i < arguments.length; _i++) {
+                            args[_i - 0] = arguments[_i];
+                        }
+                        return null;
+                    };
             default:
-                return function (x, y) { return _this.startDrawMarker(x, y); };
+                return isRight
+                    ? function () {
+                        var args = [];
+                        for (var _i = 0; _i < arguments.length; _i++) {
+                            args[_i - 0] = arguments[_i];
+                        }
+                        return null;
+                    }
+                    : function (x, y) { return _this.startDrawMarker(x, y); };
         }
     };
     WorkbookComponent.prototype.startDrawMarker = function (startX, startY) {
@@ -78,14 +91,9 @@ var WorkbookComponent = (function (_super) {
     WorkbookComponent.prototype.detectDragAction = function (isRight) {
         var _this = this;
         if (isRight === void 0) { isRight = false; }
-        switch (true) {
-            case this.state.shortCut === constants_1.ShortCut.Slide:
-                return isRight
-                    ? function (startX, startY, x, y, endX, endY) { return _this.slideSheet(x, y, endX, endY); }
-                    : function (startX, startY, x, y, endX, endY) { return _this.slidePage(x, y, endX, endY); };
-            default:
-                return function (startX, startY, x, y, endX, endY) { return _this.drawMarker(startX, startY, endX, endY, _this.rightColor); };
-        }
+        return isRight
+            ? function (startX, startY, x, y, endX, endY) { return _this.slideSheet(x, y, endX, endY); }
+            : function (startX, startY, x, y, endX, endY) { return _this.slidePage(x, y, endX, endY); };
     };
     WorkbookComponent.prototype.onPressDouble = function (x, y) {
         this.dispatch('workspace:press:double', x, y);

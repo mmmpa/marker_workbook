@@ -13,7 +13,7 @@ export default class WorkbookPDFController extends Good {
     if (!this.isRendering) {
       return null;
     }
-    return <Fa icon="spinner" animation="pulse"/>;
+    return <p className="rendering"><Fa icon="spinner" animation="pulse"/></p>;
   }
 
   get isRendering() {

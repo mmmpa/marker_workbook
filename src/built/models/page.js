@@ -26,6 +26,10 @@ var Page = (function (_super) {
         this.markers.push(newMarker);
         return newMarker;
     };
+    Page.prototype.removeMarker = function (marker) {
+        this.markers = _.filter(this.markers, function (m) { return m.id !== marker.id; });
+        this.update();
+    };
     Page.prototype.moveSheet = function (moveX, moveY) {
         this.sheetPosition.x += moveX;
         this.sheetPosition.y += moveY;

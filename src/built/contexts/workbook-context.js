@@ -35,9 +35,28 @@ var WorkbookContext = (function (_super) {
         to(null, 'tool:change:slide:sheet', function () { return _this.setState({ mode: constants_1.ToolMode.SlidingSheet }); });
         to(null, 'tool:change:draw:Marker', function () { return _this.setState({ mode: constants_1.ToolMode.DrawingMark }); });
         to(null, 'tool:change:delete:marker', function () { return _this.setState({ mode: constants_1.ToolMode.DeletingMark }); });
+        to(null, 'marker:click', function (marker, isRight) { return _this.selectMarker(marker, isRight); });
         to(null, 'workbook:save', function () {
             _this.dispatch('workbook:save:json', _this.state.workbook.forJSON);
         });
+    };
+    WorkbookContext.prototype.selectMarker = function (marker, isRight) {
+        var keyControl = this.props.keyControl;
+        var mode = this.state.mode;
+        if (keyControl.isDown('Space')) {
+            return;
+        }
+        if (mode !== constants_1.ToolMode.DrawingMark && mode !== constants_1.ToolMode.DeletingMark) {
+            return;
+        }
+        if (mode === constants_1.ToolMode.DrawingMark && !isRight) {
+            return;
+        }
+        if (mode === constants_1.ToolMode.DeletingMark && isRight) {
+            return;
+        }
+        this.state.page.removeMarker(marker);
+        this.setState({});
     };
     Object.defineProperty(WorkbookContext.prototype, "isLoaded", {
         get: function () {
