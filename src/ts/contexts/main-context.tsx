@@ -12,7 +12,9 @@ export default class MainContext extends Parcel {
     let defaultState = {
       file: null,
       state: AppState.Ready,
-      keyControl: new KeyControl()
+      keyControl: new KeyControl({killer:{
+        'onSpace': true
+      }})
     };
     
     
@@ -22,7 +24,7 @@ export default class MainContext extends Parcel {
       this.setState(defaultState, ()=>{
         new FileHandler((file)=> {
           if(firstWorkbookData){
-            //new WorkbookRecord(file.key).write('workbook', firstWorkbookData);
+            new WorkbookRecord(file.key).write('workbook', firstWorkbookData);
           }
           this.dispatch('file:set', file);
         }, firstDataURI);

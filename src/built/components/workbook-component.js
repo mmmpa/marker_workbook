@@ -55,12 +55,13 @@ var WorkbookComponent = (function (_super) {
     };
     WorkbookComponent.prototype.startDrawMarker = function (startX, startY) {
         var _this = this;
+        var scale = this.props.scale;
         var offsetX = -this.props.page.pagePosition.x;
         var offsetY = -this.props.page.pagePosition.y;
-        var marker = this.props.page.newMarker(startX + offsetX, startY + offsetY, this.props.thickness);
+        var marker = this.props.page.newMarker((startX + offsetX) / scale, (startY + offsetY) / scale, this.props.thickness);
         var move = function (e) {
             var _a = _this.mousePosition(e), x = _a.x, y = _a.y;
-            marker.to(x + offsetX, y + offsetY);
+            marker.to((x + offsetX) / scale, (y + offsetY) / scale);
             _this.props.page.update();
             _this.setState({});
         };
@@ -109,8 +110,8 @@ var WorkbookComponent = (function (_super) {
         this.setState({});
     };
     WorkbookComponent.prototype.mousePosition = function (e) {
-        var x = e.pageX - this.workspace.offsetLeft;
-        var y = e.pageY - this.workspace.offsetTop;
+        var x = e.pageX - this.workspace.offsetLeft - 100;
+        var y = e.pageY - this.workspace.offsetTop - 40;
         return { x: x, y: y };
     };
     Object.defineProperty(WorkbookComponent.prototype, "workspace", {
@@ -124,16 +125,16 @@ var WorkbookComponent = (function (_super) {
         if (!this.props.file.isPDF) {
             return null;
         }
-        var _a = this.props, pageNumber = _a.pageNumber, pageCount = _a.pageCount, workbookState = _a.workbookState;
-        return React.createElement(pdf_controller_1.default, React.__spread({}, { pageNumber: pageNumber, pageCount: pageCount, workbookState: workbookState }));
+        var _a = this.props, pageNumber = _a.pageNumber, pageCount = _a.pageCount, workbookState = _a.workbookState, scale = _a.scale;
+        return React.createElement(pdf_controller_1.default, React.__spread({}, { pageNumber: pageNumber, pageCount: pageCount, workbookState: workbookState, scale: scale }));
     };
     WorkbookComponent.prototype.render = function () {
         var _this = this;
         if (!this.props.file) {
             return React.createElement("div", {className: "workbook-component", ref: "workspace"}, React.createElement("div", {className: "workbook-controller"}));
         }
-        var _a = this.props, mode = _a.mode, page = _a.page, size = _a.size, dataURL = _a.dataURL, thickness = _a.thickness, sheetVisibility = _a.sheetVisibility;
-        return React.createElement("div", {className: "workbook-component", ref: "workspace"}, React.createElement("div", {className: "workbook-controller"}, React.createElement(workbook_tool_component_1.default, React.__spread({}, { mode: mode, thickness: thickness, sheetVisibility: sheetVisibility })), this.writeController()), React.createElement("div", {className: "workbook-container", onMouseDown: function (e) { return _this.onMouseDown(e); }, onContextMenu: function (e) { return e.preventDefault(); }}, React.createElement(workbook_viewer_component_1.default, React.__spread({}, { page: page, size: size, dataURL: dataURL, sheetVisibility: sheetVisibility }))));
+        var _a = this.props, mode = _a.mode, page = _a.page, size = _a.size, dataURL = _a.dataURL, thickness = _a.thickness, sheetVisibility = _a.sheetVisibility, scale = _a.scale;
+        return React.createElement("div", {className: "workbook-component", ref: "workspace"}, React.createElement("div", {className: "workbook-controller"}, React.createElement(workbook_tool_component_1.default, React.__spread({}, { mode: mode, thickness: thickness, sheetVisibility: sheetVisibility })), this.writeController()), React.createElement("div", {className: "workbook-container", onMouseDown: function (e) { return _this.onMouseDown(e); }, onContextMenu: function (e) { return e.preventDefault(); }}, React.createElement(workbook_viewer_component_1.default, React.__spread({}, { page: page, size: size, dataURL: dataURL, sheetVisibility: sheetVisibility, scale: scale }))));
     };
     return WorkbookComponent;
 }(parcel_1.Good));

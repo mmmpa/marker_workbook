@@ -13,8 +13,10 @@ body
   bottom: 0
   right: 0
   overflow: hidden
+
 body, input, select, button
-  font-family: Quicksand,游ゴシック体,'Yu Gothic',YuGothic,'ヒラギノ角ゴシック Pro','Hiragino Kaku Gothic Pro',メイリオ,Meiryo,Osaka,'ＭＳ Ｐゴシック','MS PGothic',sans-serif
+  font-family: Quicksand, 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif
+
 .workbook-component,
 .workbook-controller,
 .workbook-container,
@@ -86,6 +88,7 @@ body, input, select, button
   .file-key
     display: inline-block
     padding: 0 20px 0 0
+
 .workbook-controller
   width: $icon-button-width
   top: $icon-button-height
@@ -121,18 +124,25 @@ body, input, select, button
   .page-number
     padding: 10px 0
     text-align: center
-    font-size: 2em
+    font-size: 1.5em
   .rendering
     margin: 0
     text-align: center
     font-size: 4em
     color: $navy_dark
 
-.tool-area
-  .thickness
+.tool-area,
+.pdf-tool
+  h1
+    background: $silver_dark
+    margin: 20px 0 0 0
+    padding: 5px
+    font-size: 14px
+  .thickness,
+  .scale
     box-sizing: border-box
     outline: 0
     width: $icon-button-width
     font-size: 14px
-    padding: 5px 10px
+    padding: 5px
     background: #fff

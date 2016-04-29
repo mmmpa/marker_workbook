@@ -17,11 +17,12 @@ export default class MarkerViewerComponent extends Good {
   }
 
   writeMarkers() {
+    let {scale} = this.props;
     let {markers} = this.props.page;
 
     return markers.map((marker:Marker)=> {
-      return <div className="marker" style={marker.wrapperCSS} onMouseDown={(e)=> this.dispatch('marker:click', marker, e.nativeEvent.which === 3)}>
-        <div className="marker-draw" style={marker.innerCSS}>&nbsp;</div>
+      return <div className="marker" style={marker.wrapperCSS(scale)} onMouseDown={(e)=> this.dispatch('marker:click', marker, e.nativeEvent.which === 3)}>
+        <div className="marker-draw" style={marker.innerCSS(scale)}>&nbsp;</div>
       </div>
     })
   }

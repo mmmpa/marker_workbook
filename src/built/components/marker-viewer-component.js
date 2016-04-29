@@ -22,9 +22,10 @@ var MarkerViewerComponent = (function (_super) {
     };
     MarkerViewerComponent.prototype.writeMarkers = function () {
         var _this = this;
+        var scale = this.props.scale;
         var markers = this.props.page.markers;
         return markers.map(function (marker) {
-            return React.createElement("div", {className: "marker", style: marker.wrapperCSS, onMouseDown: function (e) { return _this.dispatch('marker:click', marker, e.nativeEvent.which === 3); }}, React.createElement("div", {className: "marker-draw", style: marker.innerCSS}, " "));
+            return React.createElement("div", {className: "marker", style: marker.wrapperCSS(scale), onMouseDown: function (e) { return _this.dispatch('marker:click', marker, e.nativeEvent.which === 3); }}, React.createElement("div", {className: "marker-draw", style: marker.innerCSS(scale)}, " "));
         });
     };
     MarkerViewerComponent.prototype.render = function () {

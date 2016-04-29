@@ -1,7 +1,8 @@
 "use strict";
 var KeyControl = (function () {
-    function KeyControl() {
+    function KeyControl(_a) {
         var _this = this;
+        var killer = (_a === void 0 ? {} : _a).killer;
         this.downStore = {};
         $(window).keydown(function (e) {
             _this.down(e.code);
@@ -13,6 +14,7 @@ var KeyControl = (function () {
             _this.up(e.keyIdentifier);
             _this.strike(null, e);
         });
+        this.killer = killer || {};
     }
     KeyControl.prototype.down = function (code) {
         this.downStore[code] = true;
@@ -38,6 +40,9 @@ var KeyControl = (function () {
         this.strike(string, e);
     };
     KeyControl.prototype.strike = function (name, e) {
+        if (this.killer && this.killer[name]) {
+            e.preventDefault();
+        }
         this.hook && this.hook(name, e);
     };
     return KeyControl;

@@ -16,6 +16,12 @@ export default class Page extends IDMan {
     this.version++;
   }
 
+  resetPosition(){
+    this.pagePosition = {x: 0, y: 0};
+    this.sheetPosition = {x: 0, y: 0};
+    this.update();
+  }
+
   newMarker(x, y, thickness = 40, length = 0, rotation = 0):Marker {
     let newMarker = new Marker(x, y, 0, thickness, 0);
     this.markers.push(newMarker);

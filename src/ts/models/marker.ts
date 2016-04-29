@@ -21,20 +21,20 @@ export default class Marker extends IDMan {
     this.length = Math.sqrt(moveX * moveX + moveY * moveY);
   }
 
-  get wrapperCSS() {
+  wrapperCSS(scale) {
     let {x, y, rotation, length, thickness} = this;
     return {
-      left: x,
-      top: y - this.thickness / 2,
+      left: x * scale,
+      top: (y - this.thickness / 2) * scale,
       transform: `rotate(${rotation}deg)`
     }
   }
 
-  get innerCSS() {
+  innerCSS(scale) {
     let {x, y, rotation, length, thickness} = this;
     return {
-      width: length,
-      height: thickness
+      width: length * scale,
+      height: thickness * scale
     }
   }
 

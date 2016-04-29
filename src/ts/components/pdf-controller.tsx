@@ -23,6 +23,10 @@ export default class WorkbookPDFController extends Good {
   render() {
     let {pageNumber, pageCount} = this.props;
     return <section className="pdf-tool">
+      <h1>PDF</h1>
+      <select className="scale" value={this.props.scale} onChange={(e)=> this.dispatch('workbook:scale', +e.target.value)}>
+        {[0.5, 1, 2, 3, 4].map((n)=> <option value={n}>{`${n * 100}%`}</option>)}
+      </select>
       <button className="icon-button next" disabled={this.isRendering} onClick={()=> this.pageNext(+1)}>
         <div><Fa icon="chevron-right"/></div>
         <p>次ページ</p>

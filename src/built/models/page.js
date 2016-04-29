@@ -18,6 +18,11 @@ var Page = (function (_super) {
     Page.prototype.update = function () {
         this.version++;
     };
+    Page.prototype.resetPosition = function () {
+        this.pagePosition = { x: 0, y: 0 };
+        this.sheetPosition = { x: 0, y: 0 };
+        this.update();
+    };
     Page.prototype.newMarker = function (x, y, thickness, length, rotation) {
         if (thickness === void 0) { thickness = 40; }
         if (length === void 0) { length = 0; }

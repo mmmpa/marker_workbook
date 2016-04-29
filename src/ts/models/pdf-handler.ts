@@ -17,12 +17,22 @@ export default class PDFHandler {
     return this.pdf.numPages
   }
 
-  store(pageNumber, dataURL, viewport) {
+  store(pageNumber, scale, dataURL, viewport) {
     let {width, height} = viewport;
-    this.pageStore[pageNumber] = {dataURL, size: {width, height}};
+    if (!this.pageStore[pageNumber]) {
+      this.pageStore[pageNumber] = [];
+    }
+    this.pageStore[pageNumber][scale] = {dataURL, size: {width, height}};
   }
 
-  page(n, callback:(pageNumber, size, dataURL)=>void) {
+  pick(pageNumber, scale) {
+    if (!this.pageStore[pageNumber]) {
+      return null;
+    }
+    return this.pageStore[pageNumber][scale];
+  }
+
+  page(n, scale, callback:(pageNumber, size, dataURL)=>void) {
     let pageNumber = n;
     if (n < 1) {
       pageNumber = 1;
@@ -30,18 +40,18 @@ export default class PDFHandler {
       pageNumber = this.pageCount
     }
 
-    let stored = this.pageStore[pageNumber];
+    let stored = this.pick(pageNumber, scale);
     if (!!stored) {
       return callback(pageNumber, stored.size, stored.dataURL);
     }
 
     this.pdf.getPage(pageNumber).then((page)=> {
-      let viewport = page.getViewport(2);
+      let viewport = page.getViewport(scale);
       let {canvas, canvasContext} = this.setupCanvas(viewport);
 
       page.render({canvasContext, viewport}).promise.then(()=> {
         let dataURL = canvas.toDataURL();
-        this.store(pageNumber, dataURL, viewport);
+        this.store(pageNumber, scale,  dataURL, viewport);
         callback(pageNumber, {width: viewport.width, height: viewport.height}, dataURL);
       });
     })

@@ -1,8 +1,9 @@
 export default class KeyControl {
   downStore:any = {};
   public hook:(name:string, e:JQueryKeyEventObject)=>void;
+  private killer:any;
 
-  constructor() {
+  constructor({killer} = {}) {
     $(window).keydown((e:JQueryKeyEventObject)=> {
       this.down(e.code);
       this.down(e.keyIdentifier);
@@ -14,6 +15,8 @@ export default class KeyControl {
       this.up(e.keyIdentifier);
       this.strike(null, e);
     });
+
+    this.killer = killer || {}
   }
 
   down(code) {
@@ -49,6 +52,9 @@ export default class KeyControl {
   }
 
   strike(name:string, e:JQueryKeyEventObject) {
+    if(this.killer && this.killer[name]){
+      e.preventDefault();
+    }
     this.hook && this.hook(name, e)
   }
 }

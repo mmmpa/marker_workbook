@@ -21,7 +21,9 @@ var MainContext = (function (_super) {
         var defaultState = {
             file: null,
             state: constants_1.AppState.Ready,
-            keyControl: new key_control_1.default()
+            keyControl: new key_control_1.default({ killer: {
+                    'onSpace': true
+                } })
         };
         var _a = this.props, firstDataURI = _a.firstDataURI, firstWorkbookData = _a.firstWorkbookData;
         if (firstDataURI) {
@@ -29,6 +31,7 @@ var MainContext = (function (_super) {
             this.setState(defaultState, function () {
                 new file_handler_1.default(function (file) {
                     if (firstWorkbookData) {
+                        new workbook_record_1.default(file.key).write('workbook', firstWorkbookData);
                     }
                     _this.dispatch('file:set', file);
                 }, firstDataURI);

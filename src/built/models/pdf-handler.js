@@ -18,11 +18,20 @@ var PDFHandler = (function () {
         enumerable: true,
         configurable: true
     });
-    PDFHandler.prototype.store = function (pageNumber, dataURL, viewport) {
+    PDFHandler.prototype.store = function (pageNumber, scale, dataURL, viewport) {
         var width = viewport.width, height = viewport.height;
-        this.pageStore[pageNumber] = { dataURL: dataURL, size: { width: width, height: height } };
+        if (!this.pageStore[pageNumber]) {
+            this.pageStore[pageNumber] = [];
+        }
+        this.pageStore[pageNumber][scale] = { dataURL: dataURL, size: { width: width, height: height } };
     };
-    PDFHandler.prototype.page = function (n, callback) {
+    PDFHandler.prototype.pick = function (pageNumber, scale) {
+        if (!this.pageStore[pageNumber]) {
+            return null;
+        }
+        return this.pageStore[pageNumber][scale];
+    };
+    PDFHandler.prototype.page = function (n, scale, callback) {
         var _this = this;
         var pageNumber = n;
         if (n < 1) {
@@ -31,16 +40,16 @@ var PDFHandler = (function () {
         else if (n > this.pageCount) {
             pageNumber = this.pageCount;
         }
-        var stored = this.pageStore[pageNumber];
+        var stored = this.pick(pageNumber, scale);
         if (!!stored) {
             return callback(pageNumber, stored.size, stored.dataURL);
         }
         this.pdf.getPage(pageNumber).then(function (page) {
-            var viewport = page.getViewport(2);
+            var viewport = page.getViewport(scale);
             var _a = _this.setupCanvas(viewport), canvas = _a.canvas, canvasContext = _a.canvasContext;
             page.render({ canvasContext: canvasContext, viewport: viewport }).promise.then(function () {
                 var dataURL = canvas.toDataURL();
-                _this.store(pageNumber, dataURL, viewport);
+                _this.store(pageNumber, scale, dataURL, viewport);
                 callback(pageNumber, { width: viewport.width, height: viewport.height }, dataURL);
             });
         });

@@ -24,15 +24,15 @@ export default class WorkbookToolComponent extends Good {
   }
 
   render() {
-    console.log(this.props)
     return <div className="tool-area">
+      <h1>Sheet</h1>
       <button className={this.classesVisibility()} onClick={()=> this.dispatch('sheet:display', !this.props.sheetVisibility)}>
         <div className="icon">
           <Fa icon="file"/>
         </div>
         <p>シートを表示</p>
       </button>
-      <button className="icon-button" onClick={()=> this.dispatch('paper:position:reset')}>
+      <button className="icon-button" onClick={()=> this.dispatch('workbook:position:reset')}>
         <div className="icon">
           <Fa icon="copy"/>
         </div>
@@ -50,6 +50,7 @@ export default class WorkbookToolComponent extends Good {
         </div>
         <p>シートを移動</p>
       </button>
+      <h1>Marker</h1>
       <select className="thickness" value={this.props.thickness} onChange={(e)=> this.dispatch('tool:thickness', +e.target.value)}>
         {_.times(10, (n)=> <option value={(n + 1) * 10}>{`${(n + 1) * 10}px`}</option>)}
       </select>

@@ -21,7 +21,8 @@ var WorkbookContext = (function (_super) {
             mode: constants_1.ToolMode.DrawingMark,
             shortCut: null,
             thickness: 40,
-            sheetVisibility: true
+            sheetVisibility: true,
+            scale: 1
         });
         this.componentWillReceiveProps(this.props);
     };
@@ -32,7 +33,6 @@ var WorkbookContext = (function (_super) {
     };
     WorkbookContext.prototype.listen = function (to) {
         var _this = this;
-        to(null, 'pdf:page', function (n) { return _this.page(n); });
         to(null, 'tool:change:slide:paper', function () { return _this.setState({ mode: constants_1.ToolMode.SlidingPaper }); });
         to(null, 'tool:change:slide:sheet', function () { return _this.setState({ mode: constants_1.ToolMode.SlidingSheet }); });
         to(null, 'tool:change:draw:Marker', function () { return _this.setState({ mode: constants_1.ToolMode.DrawingMark }); });
@@ -40,9 +40,17 @@ var WorkbookContext = (function (_super) {
         to(null, 'tool:thickness', function (thickness) { return _this.setState({ thickness: thickness }); });
         to(null, 'sheet:display', function (sheetVisibility) { return _this.setState({ sheetVisibility: sheetVisibility }); });
         to(null, 'marker:click', function (marker, isRight) { return _this.selectMarker(marker, isRight); });
+        to(null, 'pdf:page', function (pageNumber) { return _this.setState({ pageNumber: pageNumber }, function () { return _this.page(); }); });
+        to(null, 'workbook:scale', function (scale) { return _this.setState({ scale: scale }, function () { return _this.page(); }); });
+        to(null, 'workbook:position:reset', function (scale) { return _this.resetPosition(); });
         to(null, 'workbook:save', function () {
             _this.dispatch('workbook:save:json', _this.state.workbook.forJSON);
         });
+    };
+    WorkbookContext.prototype.resetPosition = function () {
+        this.state.page.resetPosition();
+        this.setState({});
+        this.dispatch('workbook:save');
     };
     WorkbookContext.prototype.selectMarker = function (marker, isRight) {
         var keyControl = this.props.keyControl;
@@ -91,7 +99,7 @@ var WorkbookContext = (function (_super) {
         }
         if (file.isPDF) {
             this.setState({ workbookState: constants_1.WorkbookState.Rendering });
-            file.pdf.page(1, function (pageNumber, size, dataURL) {
+            file.pdf.page(1, this.state.scale, function (pageNumber, size, dataURL) {
                 var workbook = new workbook_1.default(file.key, file.pdf.pageCount);
                 _this.setState({
                     workbookState: constants_1.WorkbookState.Ready,
@@ -119,15 +127,21 @@ var WorkbookContext = (function (_super) {
             });
         }
     };
-    WorkbookContext.prototype.page = function (pageNumber) {
+    WorkbookContext.prototype.page = function () {
         var _this = this;
+        var _a = this.state, pageNumber = _a.pageNumber, scale = _a.scale;
         this.setState({ workbookState: constants_1.WorkbookState.Rendering });
-        this.pdf.page(pageNumber, function (pageNumber, size, dataURL) { return _this.setState({
-            workbookState: constants_1.WorkbookState.Ready,
-            pageNumber: pageNumber,
-            dataURL: dataURL,
-            page: _this.state.workbook.page(pageNumber)
-        }); });
+        this.pdf.page(pageNumber, scale, function (pageNumber, size, dataURL) {
+            var nextPage = _this.state.workbook.page(pageNumber);
+            nextPage.update();
+            _this.setState({
+                workbookState: constants_1.WorkbookState.Ready,
+                pageNumber: pageNumber,
+                dataURL: dataURL,
+                size: size,
+                page: nextPage
+            });
+        });
     };
     return WorkbookContext;
 }(parcel_1.Parcel));

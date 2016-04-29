@@ -14,7 +14,8 @@ export default class WorkbookContext extends Parcel {
       mode: ToolMode.DrawingMark,
       shortCut: null,
       thickness: 40,
-      sheetVisibility: true
+      sheetVisibility: true,
+      scale: 1
     });
 
     this.componentWillReceiveProps(this.props)
@@ -27,7 +28,6 @@ export default class WorkbookContext extends Parcel {
   }
 
   listen(to) {
-    to(null, 'pdf:page', (n)=> this.page(n));
 
     to(null, 'tool:change:slide:paper', ()=> this.setState({mode: ToolMode.SlidingPaper}));
     to(null, 'tool:change:slide:sheet', ()=> this.setState({mode: ToolMode.SlidingSheet}));
@@ -38,28 +38,37 @@ export default class WorkbookContext extends Parcel {
 
     to(null, 'marker:click', (marker, isRight)=> this.selectMarker(marker, isRight));
 
+    to(null, 'pdf:page', (pageNumber)=> this.setState({pageNumber}, ()=> this.page()));
+    to(null, 'workbook:scale', (scale)=> this.setState({scale}, ()=> this.page()));
+    to(null, 'workbook:position:reset', (scale)=> this.resetPosition());
     to(null, 'workbook:save', ()=> {
       this.dispatch('workbook:save:json', this.state.workbook.forJSON)
     });
   }
 
-  selectMarker(marker, isRight){
+  resetPosition(){
+    this.state.page.resetPosition();
+    this.setState({});
+    this.dispatch('workbook:save');
+  }
+
+  selectMarker(marker, isRight) {
     let {keyControl} = this.props
     let {mode} = this.state;
-    
-    if(keyControl.isDown('Space')){
+
+    if (keyControl.isDown('Space')) {
       return;
     }
 
-    if(mode !== ToolMode.DrawingMark && mode !== ToolMode.DeletingMark){
+    if (mode !== ToolMode.DrawingMark && mode !== ToolMode.DeletingMark) {
       return;
     }
 
-    if(mode === ToolMode.DrawingMark && !isRight){
+    if (mode === ToolMode.DrawingMark && !isRight) {
       return;
     }
 
-    if(mode === ToolMode.DeletingMark && isRight){
+    if (mode === ToolMode.DeletingMark && isRight) {
       return;
     }
 
@@ -87,7 +96,7 @@ export default class WorkbookContext extends Parcel {
 
     if (file.isPDF) {
       this.setState({workbookState: WorkbookState.Rendering})
-      file.pdf.page(1, (pageNumber, size, dataURL)=> {
+      file.pdf.page(1, this.state.scale, (pageNumber, size, dataURL)=> {
         let workbook = new Workbook(file.key, file.pdf.pageCount);
         this.setState({
           workbookState: WorkbookState.Ready,
@@ -115,13 +124,19 @@ export default class WorkbookContext extends Parcel {
     }
   }
 
-  page(pageNumber) {
+  page() {
+    let {pageNumber, scale} = this.state;
     this.setState({workbookState: WorkbookState.Rendering})
-    this.pdf.page(pageNumber, (pageNumber, size, dataURL)=> this.setState({
-      workbookState: WorkbookState.Ready,
-      pageNumber,
-      dataURL,
-      page: this.state.workbook.page(pageNumber)
-    }));
+    this.pdf.page(pageNumber, scale, (pageNumber, size, dataURL)=> {
+      let nextPage = this.state.workbook.page(pageNumber);
+      nextPage.update();
+      this.setState({
+        workbookState: WorkbookState.Ready,
+        pageNumber,
+        dataURL,
+        size,
+        page: nextPage
+      })
+    })
   }
 }
