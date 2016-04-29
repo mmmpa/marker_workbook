@@ -19,7 +19,9 @@ var WorkbookContext = (function (_super) {
             pageNumber: 0,
             pageCount: 0,
             mode: constants_1.ToolMode.DrawingMark,
-            shortCut: null
+            shortCut: null,
+            thickness: 40,
+            sheetVisibility: true
         });
         this.componentWillReceiveProps(this.props);
     };
@@ -35,6 +37,8 @@ var WorkbookContext = (function (_super) {
         to(null, 'tool:change:slide:sheet', function () { return _this.setState({ mode: constants_1.ToolMode.SlidingSheet }); });
         to(null, 'tool:change:draw:Marker', function () { return _this.setState({ mode: constants_1.ToolMode.DrawingMark }); });
         to(null, 'tool:change:delete:marker', function () { return _this.setState({ mode: constants_1.ToolMode.DeletingMark }); });
+        to(null, 'tool:thickness', function (thickness) { return _this.setState({ thickness: thickness }); });
+        to(null, 'sheet:display', function (sheetVisibility) { return _this.setState({ sheetVisibility: sheetVisibility }); });
         to(null, 'marker:click', function (marker, isRight) { return _this.selectMarker(marker, isRight); });
         to(null, 'workbook:save', function () {
             _this.dispatch('workbook:save:json', _this.state.workbook.forJSON);
@@ -57,6 +61,7 @@ var WorkbookContext = (function (_super) {
         }
         this.state.page.removeMarker(marker);
         this.setState({});
+        this.dispatch('workbook:save');
     };
     Object.defineProperty(WorkbookContext.prototype, "isLoaded", {
         get: function () {

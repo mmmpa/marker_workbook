@@ -21,7 +21,7 @@ export default class WorkbookPDFController extends Good {
   }
 
   render() {
-    let {pageNumber, pageCount, dataURL} = this.props;
+    let {pageNumber, pageCount} = this.props;
     return <section className="pdf-tool">
       <button className="icon-button next" disabled={this.isRendering} onClick={()=> this.pageNext(+1)}>
         <div><Fa icon="chevron-right"/></div>

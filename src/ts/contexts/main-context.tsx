@@ -22,7 +22,7 @@ export default class MainContext extends Parcel {
       this.setState(defaultState, ()=>{
         new FileHandler((file)=> {
           if(firstWorkbookData){
-            new WorkbookRecord(file.key).write('workbook', firstWorkbookData);
+            //new WorkbookRecord(file.key).write('workbook', firstWorkbookData);
           }
           this.dispatch('file:set', file);
         }, firstDataURI);
@@ -35,7 +35,11 @@ export default class MainContext extends Parcel {
   listen(to) {
     to(null, 'file:start', ()=> this.setState({file: null, state: AppState.Wait}));
     to(null, 'file:set', (file)=> this.setFile(file));
-    to(null, 'workbook:save:json', (json)=> console.log(json));
+    to(null, 'workbook:save:json', (json)=> this.save(json));
+  }
+
+  save(json){
+    new WorkbookRecord(this.state.file.key).write('workbook', json)
   }
 
   setFile(file) {

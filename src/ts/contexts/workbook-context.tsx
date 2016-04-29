@@ -12,7 +12,9 @@ export default class WorkbookContext extends Parcel {
       pageNumber: 0,
       pageCount: 0,
       mode: ToolMode.DrawingMark,
-      shortCut: null
+      shortCut: null,
+      thickness: 40,
+      sheetVisibility: true
     });
 
     this.componentWillReceiveProps(this.props)
@@ -31,6 +33,8 @@ export default class WorkbookContext extends Parcel {
     to(null, 'tool:change:slide:sheet', ()=> this.setState({mode: ToolMode.SlidingSheet}));
     to(null, 'tool:change:draw:Marker', ()=> this.setState({mode: ToolMode.DrawingMark}));
     to(null, 'tool:change:delete:marker', ()=> this.setState({mode: ToolMode.DeletingMark}));
+    to(null, 'tool:thickness', (thickness)=> this.setState({thickness}));
+    to(null, 'sheet:display', (sheetVisibility)=> this.setState({sheetVisibility}));
 
     to(null, 'marker:click', (marker, isRight)=> this.selectMarker(marker, isRight));
 
@@ -61,6 +65,7 @@ export default class WorkbookContext extends Parcel {
 
     this.state.page.removeMarker(marker);
     this.setState({});
+    this.dispatch('workbook:save');
   }
 
   get isLoaded() {

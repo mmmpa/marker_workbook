@@ -31,7 +31,7 @@ var WorkbookPDFController = (function (_super) {
     });
     WorkbookPDFController.prototype.render = function () {
         var _this = this;
-        var _a = this.props, pageNumber = _a.pageNumber, pageCount = _a.pageCount, dataURL = _a.dataURL;
+        var _a = this.props, pageNumber = _a.pageNumber, pageCount = _a.pageCount;
         return React.createElement("section", {className: "pdf-tool"}, React.createElement("button", {className: "icon-button next", disabled: this.isRendering, onClick: function () { return _this.pageNext(+1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-right"})), React.createElement("p", null, "次ページ")), React.createElement("button", {className: "icon-button previous", disabled: this.isRendering, onClick: function () { return _this.pageNext(-1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-left"})), React.createElement("p", null, "前ページ")), React.createElement("div", {className: "page-number"}, React.createElement("label", null, pageNumber, "/", pageCount)), this.writeRendering());
     };
     return WorkbookPDFController;

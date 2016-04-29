@@ -1,5 +1,8 @@
 @import "./color"
 
+$icon-button-height: 50px
+$icon-button-width: 80px
+
 body
   background: $navy
   position: absolute
@@ -10,6 +13,7 @@ body
   bottom: 0
   right: 0
   overflow: hidden
+body, input, select, button
   font-family: Quicksand,游ゴシック体,'Yu Gothic',YuGothic,'ヒラギノ角ゴシック Pro','Hiragino Kaku Gothic Pro',メイリオ,Meiryo,Osaka,'ＭＳ Ｐゴシック','MS PGothic',sans-serif
 .workbook-component,
 .workbook-controller,
@@ -33,6 +37,10 @@ body
   left: 0
   bottom: 0
   right: 0
+
+.workbook-container
+  top: 40px
+  left: 100px
 
 .marker
   transform-origin: left 50%
@@ -65,8 +73,8 @@ body
 .file-selector-component
   top: 0
   left: 0
-  width: 100px
-  height: 100px
+  width: $icon-button-width
+  height: $icon-button-height
   background: rgba(236, 240, 241, 1.0)
   z-index: 200
   white-space: nowrap
@@ -79,17 +87,18 @@ body
     display: inline-block
     padding: 0 20px 0 0
 .workbook-controller
-  width: 100px
-  top: 100px
+  width: $icon-button-width
+  top: $icon-button-height
   bottom: 0
   background: rgba(236, 240, 241, 1.0)
   z-index: 100
 
 .icon-button
   box-sizing: border-box
-  width: 100px
-  height: 100px
-  font-size: 12px
+  width: $icon-button-width
+  height: $icon-button-height
+  font-size: 10px
+  padding: 0
   background: linear-gradient($silver, $silver_dark)
   text-shadow: 0 1px $silver
   border: 1px solid #000
@@ -99,11 +108,14 @@ body
   &.active-button
     background: linear-gradient($gray_dark, $silver)
     border-color: $gray_dark $gray $gray $gray_dark
+    i.fa
+      color: $turquoise
+      text-shadow: 0 -1px #000
   i.fa
-    font-size: 3em
-    margin: 0 -10px
+    font-size: 1.5em
+    margin: 0 -0.2em
   p
-    margin: 10px 0 0 0
+    margin: 2px 0 0 0
 
 .pdf-tool
   .page-number
@@ -115,3 +127,12 @@ body
     text-align: center
     font-size: 4em
     color: $navy_dark
+
+.tool-area
+  .thickness
+    box-sizing: border-box
+    outline: 0
+    width: $icon-button-width
+    font-size: 14px
+    padding: 5px 10px
+    background: #fff

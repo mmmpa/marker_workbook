@@ -2,7 +2,7 @@ import Marker from "./marker";
 import IDMan from "./id-man";
 
 export default class Page extends IDMan {
-  pagePosition:any = {x: 210, y: 50};
+  pagePosition:any = {x: 0, y: 0};
   sheetPosition:any = {x: 0, y: 0};
   markers:Marker[] = [];
 

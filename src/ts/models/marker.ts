@@ -43,9 +43,9 @@ export default class Marker extends IDMan {
   }
 
   get forJSON() {
-    let {x, y, length, rotation} = this;
+    let {x, y, length, rotation, thickness} = this;
 
-    return {x, y, length, rotation}
+    return {x, y, length, rotation, thickness}
   }
 
   static fromJSON(data) {

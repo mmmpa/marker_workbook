@@ -29,7 +29,6 @@ var MainContext = (function (_super) {
             this.setState(defaultState, function () {
                 new file_handler_1.default(function (file) {
                     if (firstWorkbookData) {
-                        new workbook_record_1.default(file.key).write('workbook', firstWorkbookData);
                     }
                     _this.dispatch('file:set', file);
                 }, firstDataURI);
@@ -43,7 +42,10 @@ var MainContext = (function (_super) {
         var _this = this;
         to(null, 'file:start', function () { return _this.setState({ file: null, state: constants_1.AppState.Wait }); });
         to(null, 'file:set', function (file) { return _this.setFile(file); });
-        to(null, 'workbook:save:json', function (json) { return console.log(json); });
+        to(null, 'workbook:save:json', function (json) { return _this.save(json); });
+    };
+    MainContext.prototype.save = function (json) {
+        new workbook_record_1.default(this.state.file.key).write('workbook', json);
     };
     MainContext.prototype.setFile = function (file) {
         this.setState({ file: file, state: constants_1.AppState.Ready });

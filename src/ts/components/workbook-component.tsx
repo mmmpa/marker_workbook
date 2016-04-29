@@ -37,7 +37,7 @@ export default class WorkbookComponent extends Good {
   startDrawMarker(startX, startY) {
     let offsetX = -this.props.page.pagePosition.x
     let offsetY = -this.props.page.pagePosition.y
-    let marker = this.props.page.newMarker(startX + offsetX, startY + offsetY);
+    let marker = this.props.page.newMarker(startX + offsetX, startY + offsetY, this.props.thickness);
 
     let move = (e:MouseEvent)=> {
       let {x, y} = this.mousePosition(e);
@@ -49,6 +49,7 @@ export default class WorkbookComponent extends Good {
     let clear = ()=> {
       $(window).off('mouseup', clear);
       $(window).off('mousemove', move);
+      this.dispatch('workbook:save');
     };
 
     $(window).on('mousemove', move);
@@ -69,6 +70,7 @@ export default class WorkbookComponent extends Good {
     let clear = ()=> {
       $(window).off('mouseup', clear);
       $(window).off('mousemove', move);
+      this.dispatch('workbook:save');
     };
 
     $(window).on('mousemove', move);
@@ -109,8 +111,8 @@ export default class WorkbookComponent extends Good {
     if (!this.props.file.isPDF) {
       return null;
     }
-
-    return <WorkbookPDFController {...this.relayingProps()}/>
+    let {pageNumber, pageCount, workbookState} = this.props;
+    return <WorkbookPDFController {...{pageNumber, pageCount, workbookState}}/>
   }
 
   render() {
@@ -120,12 +122,14 @@ export default class WorkbookComponent extends Good {
       </div>;
     }
 
+    let {mode, page, size, dataURL, thickness, sheetVisibility} = this.props
+
     return <div className="workbook-component" ref="workspace">
       <div className="workbook-controller">
-        <WorkbookToolComponent {...this.relayingProps()}/>{this.writeController()}
+        <WorkbookToolComponent {...{mode, thickness, sheetVisibility}}/>{this.writeController()}
       </div>
-      <div className="workbook-container" onMouseDown={(e)=> this.onMouseDown(e) } onContextMenu={(e)=> e.preventDefault()}>
-        <WorkbookViewerComponent {...this.relayingProps()}/>
+      <div className="workbook-container" onMouseDown={(e)=> this.onMouseDown(e)} onContextMenu={(e)=> e.preventDefault()}>
+        <WorkbookViewerComponent {...{page, size, dataURL, sheetVisibility}}/>
       </div>
     </div>
   }

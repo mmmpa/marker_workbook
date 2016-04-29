@@ -16,20 +16,43 @@ export default class WorkbookToolComponent extends Good {
     });
   }
 
+  classesVisibility() {
+    return classSet({
+      'icon-button': true,
+      'active-button': this.props.sheetVisibility
+    });
+  }
+
   render() {
+    console.log(this.props)
     return <div className="tool-area">
+      <button className={this.classesVisibility()} onClick={()=> this.dispatch('sheet:display', !this.props.sheetVisibility)}>
+        <div className="icon">
+          <Fa icon="file"/>
+        </div>
+        <p>シートを表示</p>
+      </button>
+      <button className="icon-button" onClick={()=> this.dispatch('paper:position:reset')}>
+        <div className="icon">
+          <Fa icon="copy"/>
+        </div>
+        <p>位置をリセット</p>
+      </button>
       <button className={this.classesFor(ToolMode.SlidingPaper)} onClick={()=> this.dispatch('tool:change:slide:paper')}>
         <div className="icon">
-          <Fa icon="hand-paper-o"/>
+          <Fa icon="arrows"/>
         </div>
         <p>ページを移動</p>
       </button>
       <button className={this.classesFor(ToolMode.SlidingSheet)} onClick={()=> this.dispatch('tool:change:slide:sheet')}>
         <div className="icon">
-          <Fa icon="file-o"/> <Fa icon="hand-paper-o"/>
+          <Fa icon="file"/> <Fa icon="arrows"/>
         </div>
         <p>シートを移動</p>
       </button>
+      <select className="thickness" value={this.props.thickness} onChange={(e)=> this.dispatch('tool:thickness', +e.target.value)}>
+        {_.times(10, (n)=> <option value={(n + 1) * 10}>{`${(n + 1) * 10}px`}</option>)}
+      </select>
       <button className={this.classesFor(ToolMode.DrawingMark)} onClick={()=> this.dispatch('tool:change:draw:Marker')}>
         <div className="icon">
           <Fa icon="pencil"/>

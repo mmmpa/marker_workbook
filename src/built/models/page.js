@@ -10,7 +10,7 @@ var Page = (function (_super) {
     __extends(Page, _super);
     function Page() {
         _super.call(this);
-        this.pagePosition = { x: 210, y: 50 };
+        this.pagePosition = { x: 0, y: 0 };
         this.sheetPosition = { x: 0, y: 0 };
         this.markers = [];
         this.version = 0;

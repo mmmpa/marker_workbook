@@ -7,7 +7,7 @@ import SheetComponent from "./sheet-component";
 
 export default class WorkbookViewerComponent extends Good {
   render() {
-    let {dataURL, page, size} = this.props;
+    let {dataURL, page, size, sheetVisibility} = this.props;
 
     if (!page) {
       return null;
@@ -18,7 +18,7 @@ export default class WorkbookViewerComponent extends Good {
     return <div className="viewer-area">
       <div className="workbook-area" style={{left: x, top: y}}>
         <div className="marker-area">
-          <MarkerViewerComponent {...this.relayingProps()} {...{page}}/> <SheetComponent {...this.relayingProps()} {...{page, size}}/>
+          <MarkerViewerComponent {...{page}}/> <SheetComponent {...{page, size, sheetVisibility}}/>
         </div>
         <img src={dataURL}/>
       </div>

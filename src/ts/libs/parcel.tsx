@@ -3,6 +3,14 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as _ from 'lodash';
 
+interface IEventingShared {
+  emitter: EventEmitter
+}
+
+export const EventingShared = {
+  emitter: React.PropTypes.any
+};
+
 interface GoodProps {
   emitter?:EventEmitter,
 }
@@ -26,6 +34,20 @@ interface EventStore {
 
 export abstract class Good<P, S> extends React.Component<P & GoodProps, S & GoodState> {
   emitter:EventEmitter;
+  context:IEventingShared;
+
+  static get contextTypes():React.ValidationMap<any> {
+    return EventingShared;
+  }
+
+  static get childContextTypes():React.ValidationMap<any> {
+    return EventingShared;
+  }
+
+  getChildContext():IEventingShared {
+    return {emitter: this.emitter};
+  }
+
   eventStore:any[] = [];
 
   addEventSafety(target, ...args) {
@@ -39,6 +61,11 @@ export abstract class Good<P, S> extends React.Component<P & GoodProps, S & Good
 
   dispatch(event:string, ...args:any[]):boolean {
     return (this.emitter || this.props.emitter).emit(event, ...args);
+  }
+
+  private _emitter;
+  get emitter(){
+    return this.context.emitter || this._emitter || (this._emitter = new EventEmitter())
   }
 
   activate() {
@@ -146,10 +173,6 @@ export abstract class Parcel<P, S> extends Good<P & ParcelProps, S & ParcelState
 
   constructor(props) {
     super(props);
-
-    this.emitter = props.emitter
-      ? props.emitter
-      : new EventEmitter();
   }
 
   get children() {

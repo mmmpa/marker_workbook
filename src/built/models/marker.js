@@ -59,8 +59,8 @@ var Marker = (function (_super) {
     });
     Object.defineProperty(Marker.prototype, "forJSON", {
         get: function () {
-            var _a = this, x = _a.x, y = _a.y, length = _a.length, rotation = _a.rotation;
-            return { x: x, y: y, length: length, rotation: rotation };
+            var _a = this, x = _a.x, y = _a.y, length = _a.length, rotation = _a.rotation, thickness = _a.thickness;
+            return { x: x, y: y, length: length, rotation: rotation, thickness: thickness };
         },
         enumerable: true,
         configurable: true

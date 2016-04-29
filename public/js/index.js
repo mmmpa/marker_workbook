@@ -111,7 +111,7 @@ var WorkbookPDFController = (function (_super) {
     });
     WorkbookPDFController.prototype.render = function () {
         var _this = this;
-        var _a = this.props, pageNumber = _a.pageNumber, pageCount = _a.pageCount, dataURL = _a.dataURL;
+        var _a = this.props, pageNumber = _a.pageNumber, pageCount = _a.pageCount;
         return React.createElement("section", {className: "pdf-tool"}, React.createElement("button", {className: "icon-button next", disabled: this.isRendering, onClick: function () { return _this.pageNext(+1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-right"})), React.createElement("p", null, "次ページ")), React.createElement("button", {className: "icon-button previous", disabled: this.isRendering, onClick: function () { return _this.pageNext(-1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-left"})), React.createElement("p", null, "前ページ")), React.createElement("div", {className: "page-number"}, React.createElement("label", null, pageNumber, "/", pageCount)), this.writeRendering());
     };
     return WorkbookPDFController;
@@ -134,9 +134,12 @@ var SheetComponent = (function (_super) {
         _super.apply(this, arguments);
     }
     SheetComponent.prototype.render = function () {
-        var _a = this.props, page = _a.page, size = _a.size;
+        var _a = this.props, page = _a.page, size = _a.size, sheetVisibility = _a.sheetVisibility;
         var width = size.width, height = size.height;
         var _b = page.sheetPosition, x = _b.x, y = _b.y;
+        if (!sheetVisibility) {
+            return null;
+        }
         return React.createElement("div", {className: "sheet-area", style: { left: x, top: y, width: width, height: height }}, React.createElement("div", {className: "sheet"}), React.createElement("div", {className: "markers", style: { left: -x, top: -y }}, React.createElement(marker_viewer_component_1.default, React.__spread({}, { page: page }))));
     };
     return SheetComponent;
@@ -204,7 +207,7 @@ var WorkbookComponent = (function (_super) {
         var _this = this;
         var offsetX = -this.props.page.pagePosition.x;
         var offsetY = -this.props.page.pagePosition.y;
-        var marker = this.props.page.newMarker(startX + offsetX, startY + offsetY);
+        var marker = this.props.page.newMarker(startX + offsetX, startY + offsetY, this.props.thickness);
         var move = function (e) {
             var _a = _this.mousePosition(e), x = _a.x, y = _a.y;
             marker.to(x + offsetX, y + offsetY);
@@ -214,6 +217,7 @@ var WorkbookComponent = (function (_super) {
         var clear = function () {
             $(window).off('mouseup', clear);
             $(window).off('mousemove', move);
+            _this.dispatch('workbook:save');
         };
         $(window).on('mousemove', move);
         $(window).on('mouseup', clear);
@@ -231,6 +235,7 @@ var WorkbookComponent = (function (_super) {
         var clear = function () {
             $(window).off('mouseup', clear);
             $(window).off('mousemove', move);
+            _this.dispatch('workbook:save');
         };
         $(window).on('mousemove', move);
         $(window).on('mouseup', clear);
@@ -269,14 +274,16 @@ var WorkbookComponent = (function (_super) {
         if (!this.props.file.isPDF) {
             return null;
         }
-        return React.createElement(pdf_controller_1.default, React.__spread({}, this.relayingProps()));
+        var _a = this.props, pageNumber = _a.pageNumber, pageCount = _a.pageCount, workbookState = _a.workbookState;
+        return React.createElement(pdf_controller_1.default, React.__spread({}, { pageNumber: pageNumber, pageCount: pageCount, workbookState: workbookState }));
     };
     WorkbookComponent.prototype.render = function () {
         var _this = this;
         if (!this.props.file) {
             return React.createElement("div", {className: "workbook-component", ref: "workspace"}, React.createElement("div", {className: "workbook-controller"}));
         }
-        return React.createElement("div", {className: "workbook-component", ref: "workspace"}, React.createElement("div", {className: "workbook-controller"}, React.createElement(workbook_tool_component_1.default, React.__spread({}, this.relayingProps())), this.writeController()), React.createElement("div", {className: "workbook-container", onMouseDown: function (e) { return _this.onMouseDown(e); }, onContextMenu: function (e) { return e.preventDefault(); }}, React.createElement(workbook_viewer_component_1.default, React.__spread({}, this.relayingProps()))));
+        var _a = this.props, mode = _a.mode, page = _a.page, size = _a.size, dataURL = _a.dataURL, thickness = _a.thickness, sheetVisibility = _a.sheetVisibility;
+        return React.createElement("div", {className: "workbook-component", ref: "workspace"}, React.createElement("div", {className: "workbook-controller"}, React.createElement(workbook_tool_component_1.default, React.__spread({}, { mode: mode, thickness: thickness, sheetVisibility: sheetVisibility })), this.writeController()), React.createElement("div", {className: "workbook-container", onMouseDown: function (e) { return _this.onMouseDown(e); }, onContextMenu: function (e) { return e.preventDefault(); }}, React.createElement(workbook_viewer_component_1.default, React.__spread({}, { page: page, size: size, dataURL: dataURL, sheetVisibility: sheetVisibility }))));
     };
     return WorkbookComponent;
 }(parcel_1.Good));
@@ -308,9 +315,16 @@ var WorkbookToolComponent = (function (_super) {
             'active-button': mode === tool
         });
     };
+    WorkbookToolComponent.prototype.classesVisibility = function () {
+        return classSet({
+            'icon-button': true,
+            'active-button': this.props.sheetVisibility
+        });
+    };
     WorkbookToolComponent.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", {className: "tool-area"}, React.createElement("button", {className: this.classesFor(constants_1.ToolMode.SlidingPaper), onClick: function () { return _this.dispatch('tool:change:slide:paper'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "hand-paper-o"})), React.createElement("p", null, "ページを移動")), React.createElement("button", {className: this.classesFor(constants_1.ToolMode.SlidingSheet), onClick: function () { return _this.dispatch('tool:change:slide:sheet'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "file-o"}), " ", React.createElement(fa_1.default, {icon: "hand-paper-o"})), React.createElement("p", null, "シートを移動")), React.createElement("button", {className: this.classesFor(constants_1.ToolMode.DrawingMark), onClick: function () { return _this.dispatch('tool:change:draw:Marker'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "pencil"})), React.createElement("p", null, "マーカーを追加")), React.createElement("button", {className: this.classesFor(constants_1.ToolMode.DeletingMark), onClick: function () { return _this.dispatch('tool:change:delete:marker'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "eraser"})), React.createElement("p", null, "マーカーを消す")));
+        console.log(this.props);
+        return React.createElement("div", {className: "tool-area"}, React.createElement("button", {className: this.classesVisibility(), onClick: function () { return _this.dispatch('sheet:display', !_this.props.sheetVisibility); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "file"})), React.createElement("p", null, "シートを表示")), React.createElement("button", {className: "icon-button", onClick: function () { return _this.dispatch('paper:position:reset'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "copy"})), React.createElement("p", null, "位置をリセット")), React.createElement("button", {className: this.classesFor(constants_1.ToolMode.SlidingPaper), onClick: function () { return _this.dispatch('tool:change:slide:paper'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "arrows"})), React.createElement("p", null, "ページを移動")), React.createElement("button", {className: this.classesFor(constants_1.ToolMode.SlidingSheet), onClick: function () { return _this.dispatch('tool:change:slide:sheet'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "file"}), " ", React.createElement(fa_1.default, {icon: "arrows"})), React.createElement("p", null, "シートを移動")), React.createElement("select", {className: "thickness", value: this.props.thickness, onChange: function (e) { return _this.dispatch('tool:thickness', +e.target.value); }}, _.times(10, function (n) { return React.createElement("option", {value: (n + 1) * 10}, (n + 1) * 10 + "px"); })), React.createElement("button", {className: this.classesFor(constants_1.ToolMode.DrawingMark), onClick: function () { return _this.dispatch('tool:change:draw:Marker'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "pencil"})), React.createElement("p", null, "マーカーを追加")), React.createElement("button", {className: this.classesFor(constants_1.ToolMode.DeletingMark), onClick: function () { return _this.dispatch('tool:change:delete:marker'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "eraser"})), React.createElement("p", null, "マーカーを消す")));
     };
     return WorkbookToolComponent;
 }(parcel_1.Good));
@@ -334,12 +348,12 @@ var WorkbookViewerComponent = (function (_super) {
         _super.apply(this, arguments);
     }
     WorkbookViewerComponent.prototype.render = function () {
-        var _a = this.props, dataURL = _a.dataURL, page = _a.page, size = _a.size;
+        var _a = this.props, dataURL = _a.dataURL, page = _a.page, size = _a.size, sheetVisibility = _a.sheetVisibility;
         if (!page) {
             return null;
         }
         var _b = page.pagePosition, x = _b.x, y = _b.y;
-        return React.createElement("div", {className: "viewer-area"}, React.createElement("div", {className: "workbook-area", style: { left: x, top: y }}, React.createElement("div", {className: "marker-area"}, React.createElement(marker_viewer_component_1.default, React.__spread({}, this.relayingProps(), { page: page })), " ", React.createElement(sheet_component_1.default, React.__spread({}, this.relayingProps(), { page: page, size: size }))), React.createElement("img", {src: dataURL})));
+        return React.createElement("div", {className: "viewer-area"}, React.createElement("div", {className: "workbook-area", style: { left: x, top: y }}, React.createElement("div", {className: "marker-area"}, React.createElement(marker_viewer_component_1.default, React.__spread({}, { page: page })), " ", React.createElement(sheet_component_1.default, React.__spread({}, { page: page, size: size, sheetVisibility: sheetVisibility }))), React.createElement("img", {src: dataURL})));
     };
     return WorkbookViewerComponent;
 }(parcel_1.Good));
@@ -449,7 +463,6 @@ var MainContext = (function (_super) {
             this.setState(defaultState, function () {
                 new file_handler_1.default(function (file) {
                     if (firstWorkbookData) {
-                        new workbook_record_1.default(file.key).write('workbook', firstWorkbookData);
                     }
                     _this.dispatch('file:set', file);
                 }, firstDataURI);
@@ -463,7 +476,10 @@ var MainContext = (function (_super) {
         var _this = this;
         to(null, 'file:start', function () { return _this.setState({ file: null, state: constants_1.AppState.Wait }); });
         to(null, 'file:set', function (file) { return _this.setFile(file); });
-        to(null, 'workbook:save:json', function (json) { return console.log(json); });
+        to(null, 'workbook:save:json', function (json) { return _this.save(json); });
+    };
+    MainContext.prototype.save = function (json) {
+        new workbook_record_1.default(this.state.file.key).write('workbook', json);
     };
     MainContext.prototype.setFile = function (file) {
         this.setState({ file: file, state: constants_1.AppState.Ready });
@@ -503,7 +519,9 @@ var WorkbookContext = (function (_super) {
             pageNumber: 0,
             pageCount: 0,
             mode: constants_1.ToolMode.DrawingMark,
-            shortCut: null
+            shortCut: null,
+            thickness: 40,
+            sheetVisibility: true
         });
         this.componentWillReceiveProps(this.props);
     };
@@ -519,6 +537,8 @@ var WorkbookContext = (function (_super) {
         to(null, 'tool:change:slide:sheet', function () { return _this.setState({ mode: constants_1.ToolMode.SlidingSheet }); });
         to(null, 'tool:change:draw:Marker', function () { return _this.setState({ mode: constants_1.ToolMode.DrawingMark }); });
         to(null, 'tool:change:delete:marker', function () { return _this.setState({ mode: constants_1.ToolMode.DeletingMark }); });
+        to(null, 'tool:thickness', function (thickness) { return _this.setState({ thickness: thickness }); });
+        to(null, 'sheet:display', function (sheetVisibility) { return _this.setState({ sheetVisibility: sheetVisibility }); });
         to(null, 'marker:click', function (marker, isRight) { return _this.selectMarker(marker, isRight); });
         to(null, 'workbook:save', function () {
             _this.dispatch('workbook:save:json', _this.state.workbook.forJSON);
@@ -541,6 +561,7 @@ var WorkbookContext = (function (_super) {
         }
         this.state.page.removeMarker(marker);
         this.setState({});
+        this.dispatch('workbook:save');
     };
     Object.defineProperty(WorkbookContext.prototype, "isLoaded", {
         get: function () {
@@ -677,12 +698,32 @@ var __extends = (this && this.__extends) || function (d, b) {
 var events_1 = require('events');
 var React = require('react');
 var _ = require('lodash');
+exports.EventingShared = {
+    emitter: React.PropTypes.any
+};
 var Good = (function (_super) {
     __extends(Good, _super);
     function Good() {
         _super.apply(this, arguments);
         this.eventStore = [];
     }
+    Object.defineProperty(Good, "contextTypes", {
+        get: function () {
+            return exports.EventingShared;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Good, "childContextTypes", {
+        get: function () {
+            return exports.EventingShared;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Good.prototype.getChildContext = function () {
+        return { emitter: this.emitter };
+    };
     Good.prototype.addEventSafety = function (target) {
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
@@ -705,6 +746,13 @@ var Good = (function (_super) {
         return (_a = (this.emitter || this.props.emitter)).emit.apply(_a, [event].concat(args));
         var _a;
     };
+    Object.defineProperty(Good.prototype, "emitter", {
+        get: function () {
+            return this.context.emitter || this._emitter || (this._emitter = new events_1.EventEmitter());
+        },
+        enumerable: true,
+        configurable: true
+    });
     Good.prototype.activate = function () {
     };
     Good.prototype.deactivate = function () {
@@ -767,9 +815,6 @@ var Parcel = (function (_super) {
         _super.call(this, props);
         this.addedOnStore = [];
         this.acceptable = {};
-        this.emitter = props.emitter
-            ? props.emitter
-            : new events_1.EventEmitter();
     }
     Parcel.prototype.componentWillUnmount = function () {
         var _this = this;
@@ -1145,8 +1190,8 @@ var Marker = (function (_super) {
     });
     Object.defineProperty(Marker.prototype, "forJSON", {
         get: function () {
-            var _a = this, x = _a.x, y = _a.y, length = _a.length, rotation = _a.rotation;
-            return { x: x, y: y, length: length, rotation: rotation };
+            var _a = this, x = _a.x, y = _a.y, length = _a.length, rotation = _a.rotation, thickness = _a.thickness;
+            return { x: x, y: y, length: length, rotation: rotation, thickness: thickness };
         },
         enumerable: true,
         configurable: true
@@ -1173,7 +1218,7 @@ var Page = (function (_super) {
     __extends(Page, _super);
     function Page() {
         _super.call(this);
-        this.pagePosition = { x: 210, y: 50 };
+        this.pagePosition = { x: 0, y: 0 };
         this.sheetPosition = { x: 0, y: 0 };
         this.markers = [];
         this.version = 0;

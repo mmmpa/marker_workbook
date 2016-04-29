@@ -57,7 +57,7 @@ var WorkbookComponent = (function (_super) {
         var _this = this;
         var offsetX = -this.props.page.pagePosition.x;
         var offsetY = -this.props.page.pagePosition.y;
-        var marker = this.props.page.newMarker(startX + offsetX, startY + offsetY);
+        var marker = this.props.page.newMarker(startX + offsetX, startY + offsetY, this.props.thickness);
         var move = function (e) {
             var _a = _this.mousePosition(e), x = _a.x, y = _a.y;
             marker.to(x + offsetX, y + offsetY);
@@ -67,6 +67,7 @@ var WorkbookComponent = (function (_super) {
         var clear = function () {
             $(window).off('mouseup', clear);
             $(window).off('mousemove', move);
+            _this.dispatch('workbook:save');
         };
         $(window).on('mousemove', move);
         $(window).on('mouseup', clear);
@@ -84,6 +85,7 @@ var WorkbookComponent = (function (_super) {
         var clear = function () {
             $(window).off('mouseup', clear);
             $(window).off('mousemove', move);
+            _this.dispatch('workbook:save');
         };
         $(window).on('mousemove', move);
         $(window).on('mouseup', clear);
@@ -122,14 +124,16 @@ var WorkbookComponent = (function (_super) {
         if (!this.props.file.isPDF) {
             return null;
         }
-        return React.createElement(pdf_controller_1.default, React.__spread({}, this.relayingProps()));
+        var _a = this.props, pageNumber = _a.pageNumber, pageCount = _a.pageCount, workbookState = _a.workbookState;
+        return React.createElement(pdf_controller_1.default, React.__spread({}, { pageNumber: pageNumber, pageCount: pageCount, workbookState: workbookState }));
     };
     WorkbookComponent.prototype.render = function () {
         var _this = this;
         if (!this.props.file) {
             return React.createElement("div", {className: "workbook-component", ref: "workspace"}, React.createElement("div", {className: "workbook-controller"}));
         }
-        return React.createElement("div", {className: "workbook-component", ref: "workspace"}, React.createElement("div", {className: "workbook-controller"}, React.createElement(workbook_tool_component_1.default, React.__spread({}, this.relayingProps())), this.writeController()), React.createElement("div", {className: "workbook-container", onMouseDown: function (e) { return _this.onMouseDown(e); }, onContextMenu: function (e) { return e.preventDefault(); }}, React.createElement(workbook_viewer_component_1.default, React.__spread({}, this.relayingProps()))));
+        var _a = this.props, mode = _a.mode, page = _a.page, size = _a.size, dataURL = _a.dataURL, thickness = _a.thickness, sheetVisibility = _a.sheetVisibility;
+        return React.createElement("div", {className: "workbook-component", ref: "workspace"}, React.createElement("div", {className: "workbook-controller"}, React.createElement(workbook_tool_component_1.default, React.__spread({}, { mode: mode, thickness: thickness, sheetVisibility: sheetVisibility })), this.writeController()), React.createElement("div", {className: "workbook-container", onMouseDown: function (e) { return _this.onMouseDown(e); }, onContextMenu: function (e) { return e.preventDefault(); }}, React.createElement(workbook_viewer_component_1.default, React.__spread({}, { page: page, size: size, dataURL: dataURL, sheetVisibility: sheetVisibility }))));
     };
     return WorkbookComponent;
 }(parcel_1.Good));

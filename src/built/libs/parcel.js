@@ -7,12 +7,32 @@ var __extends = (this && this.__extends) || function (d, b) {
 var events_1 = require('events');
 var React = require('react');
 var _ = require('lodash');
+exports.EventingShared = {
+    emitter: React.PropTypes.any
+};
 var Good = (function (_super) {
     __extends(Good, _super);
     function Good() {
         _super.apply(this, arguments);
         this.eventStore = [];
     }
+    Object.defineProperty(Good, "contextTypes", {
+        get: function () {
+            return exports.EventingShared;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Good, "childContextTypes", {
+        get: function () {
+            return exports.EventingShared;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Good.prototype.getChildContext = function () {
+        return { emitter: this.emitter };
+    };
     Good.prototype.addEventSafety = function (target) {
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
@@ -35,6 +55,13 @@ var Good = (function (_super) {
         return (_a = (this.emitter || this.props.emitter)).emit.apply(_a, [event].concat(args));
         var _a;
     };
+    Object.defineProperty(Good.prototype, "emitter", {
+        get: function () {
+            return this.context.emitter || this._emitter || (this._emitter = new events_1.EventEmitter());
+        },
+        enumerable: true,
+        configurable: true
+    });
     Good.prototype.activate = function () {
     };
     Good.prototype.deactivate = function () {
@@ -97,9 +124,6 @@ var Parcel = (function (_super) {
         _super.call(this, props);
         this.addedOnStore = [];
         this.acceptable = {};
-        this.emitter = props.emitter
-            ? props.emitter
-            : new events_1.EventEmitter();
     }
     Parcel.prototype.componentWillUnmount = function () {
         var _this = this;

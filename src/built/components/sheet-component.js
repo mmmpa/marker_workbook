@@ -12,9 +12,12 @@ var SheetComponent = (function (_super) {
         _super.apply(this, arguments);
     }
     SheetComponent.prototype.render = function () {
-        var _a = this.props, page = _a.page, size = _a.size;
+        var _a = this.props, page = _a.page, size = _a.size, sheetVisibility = _a.sheetVisibility;
         var width = size.width, height = size.height;
         var _b = page.sheetPosition, x = _b.x, y = _b.y;
+        if (!sheetVisibility) {
+            return null;
+        }
         return React.createElement("div", {className: "sheet-area", style: { left: x, top: y, width: width, height: height }}, React.createElement("div", {className: "sheet"}), React.createElement("div", {className: "markers", style: { left: -x, top: -y }}, React.createElement(marker_viewer_component_1.default, React.__spread({}, { page: page }))));
     };
     return SheetComponent;
