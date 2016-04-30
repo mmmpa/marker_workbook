@@ -508,7 +508,9 @@ var MainContext = (function (_super) {
             file: null,
             state: constants_1.AppState.Ready,
             keyControl: new key_control_1.default({ killer: {
-                    'onSpace': true
+                    'onSpace': true,
+                    'onArrowLeft': true,
+                    'onArrowRight': true,
                 } })
         };
         var _a = this.props, firstDataURI = _a.firstDataURI, firstWorkbookData = _a.firstWorkbookData;

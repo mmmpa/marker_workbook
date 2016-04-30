@@ -24,7 +24,9 @@ export default class MainContext extends Parcel<P,S> {
       file: null,
       state: AppState.Ready,
       keyControl: new KeyControl({killer:{
-        'onSpace': true
+        'onSpace': true,
+        'onArrowLeft': true,
+        'onArrowRight': true,
       }})
     };
     
