@@ -8,7 +8,7 @@ var plate_1 = require("../libs/plate");
 var WorkbookRecord = (function (_super) {
     __extends(WorkbookRecord, _super);
     function WorkbookRecord(key) {
-        _super.call(this, key);
+        _super.call(this, 'workbook' + key);
     }
     return WorkbookRecord;
 }(plate_1.default));

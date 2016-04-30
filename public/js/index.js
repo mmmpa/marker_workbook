@@ -512,11 +512,13 @@ var MainContext = (function (_super) {
         var defaultState = {
             file: null,
             state: constants_1.AppState.Ready,
-            keyControl: new key_control_1.default({ killer: {
+            keyControl: new key_control_1.default({
+                killer: {
                     'onSpace': true,
                     'onArrowLeft': true,
                     'onArrowRight': true,
-                } })
+                }
+            })
         };
         var _a = this.props, firstDataURI = _a.firstDataURI, firstWorkbookData = _a.firstWorkbookData;
         if (firstDataURI) {
@@ -524,7 +526,9 @@ var MainContext = (function (_super) {
             this.setState(defaultState, function () {
                 new file_handler_1.default(function (file) {
                     if (firstWorkbookData) {
-                        new workbook_record_1.default(file.key).write('workbook', firstWorkbookData);
+                        if (!new workbook_record_1.default(file.key).read('workbook')) {
+                            new workbook_record_1.default(file.key).write('workbook', firstWorkbookData);
+                        }
                     }
                     _this.dispatch('file:set', file);
                 }, firstDataURI);
@@ -1520,7 +1524,7 @@ var plate_1 = require("../libs/plate");
 var WorkbookRecord = (function (_super) {
     __extends(WorkbookRecord, _super);
     function WorkbookRecord(key) {
-        _super.call(this, key);
+        _super.call(this, 'workbook' + key);
     }
     return WorkbookRecord;
 }(plate_1.default));

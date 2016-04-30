@@ -8,11 +8,11 @@ import KeyControl from "../models/key-control";
 import WorkbookRecord from "../records/workbook-record";
 require("zepto/zepto.min");
 
-interface P{
+interface P {
   routes:Route
 }
 
-interface S{
+interface S {
   file:FileHandler
 }
 
@@ -23,26 +23,30 @@ export default class MainContext extends Parcel<P,S> {
     let defaultState = {
       file: null,
       state: AppState.Ready,
-      keyControl: new KeyControl({killer:{
-        'onSpace': true,
-        'onArrowLeft': true,
-        'onArrowRight': true,
-      }})
+      keyControl: new KeyControl({
+        killer: {
+          'onSpace': true,
+          'onArrowLeft': true,
+          'onArrowRight': true,
+        }
+      })
     };
-    
-    
+
+
     let {firstDataURI, firstWorkbookData} = this.props;
-    if(firstDataURI){
+    if (firstDataURI) {
       defaultState.state = AppState.Wait;
-      this.setState(defaultState, ()=>{
+      this.setState(defaultState, ()=> {
         new FileHandler((file)=> {
-          if(firstWorkbookData){
-            new WorkbookRecord(file.key).write('workbook', firstWorkbookData);
+          if (firstWorkbookData) {
+            if (!new WorkbookRecord(file.key).read('workbook')) {
+              new WorkbookRecord(file.key).write('workbook', firstWorkbookData);
+            }
           }
           this.dispatch('file:set', file);
         }, firstDataURI);
       });
-    }else{
+    } else {
       this.setState(defaultState);
     }
   }
@@ -53,7 +57,7 @@ export default class MainContext extends Parcel<P,S> {
     to(null, 'workbook:save:json', (json)=> this.save(json));
   }
 
-  save(json){
+  save(json) {
     new WorkbookRecord(this.state.file.key).write('workbook', json)
   }
 
