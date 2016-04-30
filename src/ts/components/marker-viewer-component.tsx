@@ -2,33 +2,46 @@ import * as React from "react";
 import * as ReactDOM from 'react-dom';
 import {Good} from "../libs/parcel";
 import Marker from "../models/marker";
+import MarkerComponent from "./marker-component";
+import Page from "../models/page";
+import Workbook from "../models/workbook";
 
-export default class MarkerViewerComponent extends Good {
+interface P {
+  workbook:Workbook
+}
+
+interface S {
+  pageNumber:number,
+  markerVersion:number
+}
+
+export default class MarkerViewerComponent extends Good<P, S> {
   componentWillMount() {
     this.componentWillReceiveProps(this.props)
   }
 
   shouldComponentUpdate(props, _) {
-    return this.props.page !== props.page || this.state.version !== props.page.version
+    return this.props.workbook !== props.workbook || this.state.pageNumber !== props.workbook.pageNumber || this.state.markerVersion !== props.workbook.currentPage.markerVersion
   }
 
   componentWillReceiveProps(props) {
-    this.setState({version: props.page.version})
+    this.setState({
+      pageNumber: props.workbook.pageNumber,
+      markerVersion: props.workbook.currentPage.markerVersion
+    })
   }
 
   writeMarkers() {
     let {scale} = this.props;
-    let {markers} = this.props.page;
+    let {markers} = this.props.workbook.currentPage;
 
     return markers.map((marker:Marker)=> {
-      return <div className="marker" style={marker.wrapperCSS(scale)} onMouseDown={(e)=> this.dispatch('marker:click', marker, e.nativeEvent.which === 3)}>
-        <div className="marker-draw" style={marker.innerCSS(scale)}>&nbsp;</div>
-      </div>
+      return <MarkerComponent {...{marker, scale, key: marker.id}}/>
     })
   }
 
   render() {
-    return <div className="marker-area">
+    return <div className="marker-viewer">
       {this.writeMarkers()}
     </div>
   }

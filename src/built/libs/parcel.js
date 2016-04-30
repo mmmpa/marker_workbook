@@ -81,7 +81,7 @@ var Good = (function (_super) {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i - 0] = arguments[_i];
         }
-        console.log.apply(console, [this.myName].concat(args));
+        //console.log(this.myName, ...args)
     };
     Good.prototype.componentWillMount = function () {
         this.debug('componentWillMount');

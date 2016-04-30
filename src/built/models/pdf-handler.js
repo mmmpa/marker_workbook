@@ -47,7 +47,7 @@ var PDFHandler = (function () {
         this.pdf.getPage(pageNumber).then(function (page) {
             var viewport = page.getViewport(scale);
             var _a = _this.setupCanvas(viewport), canvas = _a.canvas, canvasContext = _a.canvasContext;
-            page.render({ canvasContext: canvasContext, viewport: viewport }).promise.then(function () {
+            page.render({ canvasContext: canvasContext, viewport: viewport }).promise.then(function (e) {
                 var dataURL = canvas.toDataURL();
                 _this.store(pageNumber, scale, dataURL, viewport);
                 callback(pageNumber, { width: viewport.width, height: viewport.height }, dataURL);

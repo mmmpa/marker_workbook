@@ -1,7 +1,7 @@
 export default class PDFHandler {
   pageStore:any[] = [];
 
-  constructor(private pdf) {
+  constructor(private pdf:any) {
   }
 
   setupCanvas(viewport) {
@@ -49,7 +49,7 @@ export default class PDFHandler {
       let viewport = page.getViewport(scale);
       let {canvas, canvasContext} = this.setupCanvas(viewport);
 
-      page.render({canvasContext, viewport}).promise.then(()=> {
+      page.render({canvasContext, viewport}).promise.then((e)=> {
         let dataURL = canvas.toDataURL();
         this.store(pageNumber, scale,  dataURL, viewport);
         callback(pageNumber, {width: viewport.width, height: viewport.height}, dataURL);

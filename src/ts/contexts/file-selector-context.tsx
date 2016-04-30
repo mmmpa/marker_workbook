@@ -1,12 +1,7 @@
 import {Parcel} from "../libs/parcel";
-import {AppState} from "../constants/constants";
 import FileHandler from "../models/file-handler";
 
-export default class FileSelectorContext extends Parcel {
-  componentWillReceiveProps(props) {
-    console.log('selector', props)
-  }
-
+export default class FileSelectorContext extends Parcel<{},{}> {
   listen(to) {
     to(null, 'file:open', (file)=> this.open());
   }

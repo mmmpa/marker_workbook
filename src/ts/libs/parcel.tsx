@@ -85,7 +85,7 @@ export abstract class Good<P, S> extends React.Component<P & GoodProps, S & Good
   }
 
   debug(...args) {
-    console.log(this.myName, ...args)
+    //console.log(this.myName, ...args)
   }
 
   componentWillMount() {

@@ -14,7 +14,7 @@ var WorkbookPDFController = (function (_super) {
         _super.apply(this, arguments);
     }
     WorkbookPDFController.prototype.pageNext = function (n) {
-        this.dispatch('pdf:page', this.props.pageNumber + n);
+        this.dispatch('pdf:page', n);
     };
     WorkbookPDFController.prototype.writeRendering = function () {
         if (!this.isRendering) {
@@ -31,8 +31,12 @@ var WorkbookPDFController = (function (_super) {
     });
     WorkbookPDFController.prototype.render = function () {
         var _this = this;
-        var _a = this.props, pageNumber = _a.pageNumber, pageCount = _a.pageCount;
-        return React.createElement("section", {className: "pdf-tool"}, React.createElement("h1", null, "PDF"), React.createElement("select", {className: "scale", value: this.props.scale, onChange: function (e) { return _this.dispatch('workbook:scale', +e.target.value); }}, [0.5, 1, 2, 3, 4].map(function (n) { return React.createElement("option", {value: n}, n * 100 + "%"); })), React.createElement("button", {className: "icon-button next", disabled: this.isRendering, onClick: function () { return _this.pageNext(+1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-right"})), React.createElement("p", null, "次ページ")), React.createElement("button", {className: "icon-button previous", disabled: this.isRendering, onClick: function () { return _this.pageNext(-1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-left"})), React.createElement("p", null, "前ページ")), React.createElement("div", {className: "page-number"}, React.createElement("label", null, pageNumber, "/", pageCount)), this.writeRendering());
+        var workbook = this.props.workbook;
+        if (!workbook || !workbook.isPDF) {
+            return null;
+        }
+        var pageNumber = workbook.pageNumber, pageCount = workbook.pageCount;
+        return React.createElement("section", {className: "pdf-tool"}, React.createElement("h1", null, "PDF"), React.createElement("select", {className: "scale", value: this.props.scale, onChange: function (e) { return _this.dispatch('workbook:scale', +e.target.value); }}, [0.5, 1, 2, 3, 4].map(function (n) { return React.createElement("option", {value: n, key: n}, n * 100 + "%"); })), React.createElement("button", {className: "icon-button next", disabled: this.isRendering, onClick: function () { return _this.pageNext(pageNumber + 1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-right"})), React.createElement("p", null, "次ページ")), React.createElement("button", {className: "icon-button previous", disabled: this.isRendering, onClick: function () { return _this.pageNext(pageNumber - 1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-left"})), React.createElement("p", null, "前ページ")), React.createElement("div", {className: "page-number"}, React.createElement("label", null, pageNumber, "/", pageCount)), this.writeRendering());
     };
     return WorkbookPDFController;
 }(parcel_1.Good));

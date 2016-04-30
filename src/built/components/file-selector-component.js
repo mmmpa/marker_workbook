@@ -12,13 +12,15 @@ var FileSelectorComponent = (function (_super) {
     function FileSelectorComponent() {
         _super.apply(this, arguments);
     }
+    FileSelectorComponent.prototype.shouldComponentUpdate = function (props, _) {
+        return this.props.file !== props.file;
+    };
     FileSelectorComponent.prototype.open = function (e) {
-        e.target.blur();
         this.dispatch('file:open');
     };
     FileSelectorComponent.prototype.render = function () {
         var _this = this;
-        return React.createElement("div", {className: "file-selector-component"}, React.createElement("button", {className: "icon-button open", onClick: function (e) { return _this.open(e); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "folder-open-o"})), React.createElement("p", null, "ファイルを開く")), React.createElement("div", {className: "information"}, React.createElement(FileInformationComponent, React.__spread({}, { file: this.props.file }))));
+        return React.createElement("div", {className: "file-selector"}, React.createElement("button", {className: "icon-button open", onClick: function (e) { return _this.open(e); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "folder-open-o"})), React.createElement("p", null, "ファイルを開く")), React.createElement(FileInformationComponent, React.__spread({}, { file: this.props.file })));
     };
     return FileSelectorComponent;
 }(parcel_1.Good));
@@ -33,7 +35,7 @@ var FileInformationComponent = (function (_super) {
         if (!this.props.file) {
             return null;
         }
-        return React.createElement("div", {className: "file-information"}, React.createElement("section", {className: "file-name"}, "name:", this.props.file.name), React.createElement("section", {className: "file-key"}, "key:", this.props.file.key, "（localStorage保存時に使用）"));
+        return React.createElement("div", {className: "file-information"}, React.createElement("section", {className: "file-name"}, "name:", this.props.file.name), React.createElement("section", {className: "file-key"}, "key:", this.props.file.key));
     };
     return FileInformationComponent;
 }(React.Component));

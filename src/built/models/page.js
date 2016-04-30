@@ -14,9 +14,13 @@ var Page = (function (_super) {
         this.sheetPosition = { x: 0, y: 0 };
         this.markers = [];
         this.version = 0;
+        this.markerVersion = 0;
     }
     Page.prototype.update = function () {
         this.version++;
+    };
+    Page.prototype.updateMarker = function () {
+        this.markerVersion++;
     };
     Page.prototype.resetPosition = function () {
         this.pagePosition = { x: 0, y: 0 };
@@ -33,7 +37,7 @@ var Page = (function (_super) {
     };
     Page.prototype.removeMarker = function (marker) {
         this.markers = _.filter(this.markers, function (m) { return m.id !== marker.id; });
-        this.update();
+        this.updateMarker();
     };
     Page.prototype.moveSheet = function (moveX, moveY) {
         this.sheetPosition.x += moveX;

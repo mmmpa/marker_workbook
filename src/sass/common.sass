@@ -4,7 +4,7 @@ $icon-button-height: 50px
 $icon-button-width: 80px
 
 body
-  background: $navy
+  background: $gray
   position: absolute
   margin: 0
   padding: 0
@@ -24,7 +24,7 @@ body, input, select, button
 .viewer-area,
 .workbook-area,
 .sheet-area,
-.marker-area,
+.marker-viewer,
 .markers,
 .marker
   left: 0
@@ -46,18 +46,14 @@ body, input, select, button
 
 .marker
   transform-origin: left 50%
-
-.marker-draw
-  position: relative
-  background: rgba(231, 76, 60, 0.2)
+  .marker-inner
+    position: relative
+    background: rgba(231, 76, 60, 0.2)
 
 .sheet-area
   box-sizing: border-box
   overflow: hidden
   border-radius: 20px
-  .marker-draw
-    z-index: 10
-    background: rgba(0, 0, 0, 1)
   .sheet
     position: absolute
     background: rgba(46, 204, 113, 0.2)
@@ -65,25 +61,28 @@ body, input, select, button
     left: 0
     bottom: 0
     right: 0
+  .marker-inner
+    z-index: 10
+    background: rgba(0, 0, 0, 1)
 
 .workbook-component
   top: 0
   left: 0
   bottom: 0
   right: 0
+  z-index: 1000
 
-.file-selector-component
+.file-selector
   top: 0
   left: 0
   width: $icon-button-width
   height: $icon-button-height
   background: rgba(236, 240, 241, 1.0)
-  z-index: 200
+  z-index: 1000
   white-space: nowrap
-  .information
+  .file-information
     display: inline-block
     padding: 0 0 0 20px
-  .file-information,
   .file-name,
   .file-key
     display: inline-block

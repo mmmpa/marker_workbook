@@ -1,21 +1,54 @@
 import {Parcel} from "../libs/parcel";
-import {FileType, WorkbookState, ToolMode, ShortCut} from "../constants/constants";
+import {
+  FileType,
+  WorkbookState,
+  ToolMode,
+} from "../constants/constants";
 import FileHandler from "../models/file-handler";
 import Workbook from "../models/workbook";
+import KeyControl from "../models/key-control";
 
-export default class WorkbookContext extends Parcel {
+interface P {
+  file:FileHandler,
+  keyControl:KeyControl
+}
+
+interface S {
+  type:FileType,
+  mode:ToolMode,
+  thickness:number,
+  sheetVisibility:boolean,
+  workbook:Workbook,
+  scale:number
+}
+
+export default class WorkbookContext extends Parcel<P,S> {
   componentWillMount() {
     super.componentWillMount();
-
+ 
     this.setState({
       type: null,
-      pageNumber: 0,
-      pageCount: 0,
       mode: ToolMode.DrawingMark,
-      shortCut: null,
       thickness: 40,
       sheetVisibility: true,
+      workbook: null,
       scale: 1
+    });
+
+    this.props.keyControl.bind('onArrowLeft', 'pdf:back', ()=>{
+      if(!this.state.workbook.isPDF){
+        return;
+      }
+      let {pageNumber} = this.state.workbook;
+      this.dispatch('pdf:page', pageNumber - 1)
+    });
+
+    this.props.keyControl.bind('onArrowRight', 'pdf:next', ()=>{
+      if(!this.state.workbook.isPDF){
+        return;
+      }
+      let {pageNumber} = this.state.workbook;
+      this.dispatch('pdf:page', pageNumber + 1)
     });
 
     this.componentWillReceiveProps(this.props)
@@ -38,16 +71,16 @@ export default class WorkbookContext extends Parcel {
 
     to(null, 'marker:click', (marker, isRight)=> this.selectMarker(marker, isRight));
 
-    to(null, 'pdf:page', (pageNumber)=> this.setState({pageNumber}, ()=> this.page()));
-    to(null, 'workbook:scale', (scale)=> this.setState({scale}, ()=> this.page()));
+    to(null, 'pdf:page', (nextPageNumber)=> this.page({nextPageNumber}));
+    to(null, 'workbook:scale', (nextScale)=> this.page({nextScale}));
     to(null, 'workbook:position:reset', (scale)=> this.resetPosition());
     to(null, 'workbook:save', ()=> {
       this.dispatch('workbook:save:json', this.state.workbook.forJSON)
     });
   }
 
-  resetPosition(){
-    this.state.page.resetPosition();
+  resetPosition() {
+    this.state.workbook.currentPage.resetPosition();
     this.setState({});
     this.dispatch('workbook:save');
   }
@@ -72,7 +105,7 @@ export default class WorkbookContext extends Parcel {
       return;
     }
 
-    this.state.page.removeMarker(marker);
+    this.state.workbook.currentPage.removeMarker(marker);
     this.setState({});
     this.dispatch('workbook:save');
   }
@@ -97,16 +130,13 @@ export default class WorkbookContext extends Parcel {
     if (file.isPDF) {
       this.setState({workbookState: WorkbookState.Rendering})
       file.pdf.page(1, this.state.scale, (pageNumber, size, dataURL)=> {
-        let workbook = new Workbook(file.key, file.pdf.pageCount);
+        let workbook = new Workbook(file.key, file.pdf.pageCount, true);
         this.setState({
           workbookState: WorkbookState.Ready,
           type: FileType.PDF,
-          pageCount: file.pdf.pageCount,
-          pageNumber,
           dataURL,
           size,
-          workbook: workbook,
-          page: workbook.page(1)
+          workbook
         })
       });
     } else {
@@ -114,28 +144,25 @@ export default class WorkbookContext extends Parcel {
       this.setState({
         workbookState: WorkbookState.Ready,
         type: FileType.Image,
-        pageCount: 1,
-        pageNumber: 1,
         dataURL: file.dataURL,
         workbook,
-        size: {width: file.width, height: file.height},
-        page: workbook.page(1)
+        size: {width: file.width, height: file.height}
       });
     }
   }
 
-  page() {
-    let {pageNumber, scale} = this.state;
+  page({nextPageNumber, nextScale}:{nextPageNumber?, nextScale?}) {
+    let pageNumber = nextPageNumber || this.state.workbook.pageNumber;
+    let scale = nextScale || this.state.scale;
+
     this.setState({workbookState: WorkbookState.Rendering})
     this.pdf.page(pageNumber, scale, (pageNumber, size, dataURL)=> {
-      let nextPage = this.state.workbook.page(pageNumber);
-      nextPage.update();
+      this.state.workbook.page(pageNumber);
       this.setState({
         workbookState: WorkbookState.Ready,
-        pageNumber,
         dataURL,
-        size,
-        page: nextPage
+        scale,
+        size
       })
     })
   }

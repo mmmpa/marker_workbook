@@ -1,21 +1,38 @@
 "use strict";
 var KeyControl = (function () {
     function KeyControl(_a) {
-        var _this = this;
         var killer = (_a === void 0 ? {} : _a).killer;
         this.downStore = {};
-        $(window).keydown(function (e) {
-            _this.down(e.code);
-            _this.down(e.keyIdentifier);
-            _this.check(e);
-        });
-        $(window).keyup(function (e) {
-            _this.up(e.code);
-            _this.up(e.keyIdentifier);
-            _this.strike(null, e);
-        });
+        this.binding = {};
+        this.onDown = this.onDown.bind(this);
+        this.onUp = this.onUp.bind(this);
+        $(window).bind('keydown', this.onDown);
+        $(window).bind('keyup', this.onUp);
         this.killer = killer || {};
     }
+    KeyControl.prototype.bind = function (keyName, callbackName, callback) {
+        if (!this.binding[keyName]) {
+            this.binding[keyName] = {};
+        }
+        this.binding[keyName][callbackName] = callback;
+    };
+    KeyControl.prototype.unbind = function (keyName, callbackName) {
+        this.binding[keyName][callbackName] = null;
+    };
+    KeyControl.prototype.dispose = function () {
+        $(window).unbind('keydown', this.onDown);
+        $(window).unbind('keyup', this.onUp);
+    };
+    KeyControl.prototype.onDown = function (e) {
+        this.down(e.code);
+        this.down(e.keyIdentifier);
+        this.check(e);
+    };
+    KeyControl.prototype.onUp = function (e) {
+        this.up(e.code);
+        this.up(e.keyIdentifier);
+        this.strike(null, e);
+    };
     KeyControl.prototype.down = function (code) {
         this.downStore[code] = true;
     };
@@ -44,6 +61,11 @@ var KeyControl = (function () {
             e.preventDefault();
         }
         this.hook && this.hook(name, e);
+        if (this.binding[name]) {
+            for (var k in this.binding[name]) {
+                this.binding[name][k](e);
+            }
+        }
     };
     return KeyControl;
 }());

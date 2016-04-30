@@ -7,6 +7,7 @@ export default class Page extends IDMan {
   markers:Marker[] = [];
 
   version:number = 0;
+  markerVersion:number = 0;
 
   constructor() {
     super();
@@ -14,6 +15,10 @@ export default class Page extends IDMan {
 
   update() {
     this.version++;
+  }
+
+  updateMarker() {
+    this.markerVersion++;
   }
 
   resetPosition(){
@@ -30,7 +35,7 @@ export default class Page extends IDMan {
 
   removeMarker(marker) {
     this.markers = _.filter(this.markers, (m)=> m.id !== marker.id);
-    this.update();
+    this.updateMarker();
   }
 
   moveSheet(moveX, moveY) {

@@ -92,9 +92,9 @@ export default class FileHandler {
     return (e)=> {
       this.dataURL = e.target.result;
       let img = new Image();
-      img.addEventListener('load', ({target})=> {
-        this.width = target.width;
-        this.height = target.height;
+      img.addEventListener('load', (e)=> {
+        this.width = img.width;
+        this.height = img.height;
         this.callback(this);
       });
       img.src = this.dataURL;

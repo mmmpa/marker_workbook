@@ -6,6 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var React = require("react");
 var parcel_1 = require("../libs/parcel");
+var marker_component_1 = require("./marker-component");
 var MarkerViewerComponent = (function (_super) {
     __extends(MarkerViewerComponent, _super);
     function MarkerViewerComponent() {
@@ -15,21 +16,23 @@ var MarkerViewerComponent = (function (_super) {
         this.componentWillReceiveProps(this.props);
     };
     MarkerViewerComponent.prototype.shouldComponentUpdate = function (props, _) {
-        return this.props.page !== props.page || this.state.version !== props.page.version;
+        return this.props.workbook !== props.workbook || this.state.pageNumber !== props.workbook.pageNumber || this.state.markerVersion !== props.workbook.currentPage.markerVersion;
     };
     MarkerViewerComponent.prototype.componentWillReceiveProps = function (props) {
-        this.setState({ version: props.page.version });
+        this.setState({
+            pageNumber: props.workbook.pageNumber,
+            markerVersion: props.workbook.currentPage.markerVersion
+        });
     };
     MarkerViewerComponent.prototype.writeMarkers = function () {
-        var _this = this;
         var scale = this.props.scale;
-        var markers = this.props.page.markers;
+        var markers = this.props.workbook.currentPage.markers;
         return markers.map(function (marker) {
-            return React.createElement("div", {className: "marker", style: marker.wrapperCSS(scale), onMouseDown: function (e) { return _this.dispatch('marker:click', marker, e.nativeEvent.which === 3); }}, React.createElement("div", {className: "marker-draw", style: marker.innerCSS(scale)}, " "));
+            return React.createElement(marker_component_1.default, React.__spread({}, { marker: marker, scale: scale, key: marker.id }));
         });
     };
     MarkerViewerComponent.prototype.render = function () {
-        return React.createElement("div", {className: "marker-area"}, this.writeMarkers());
+        return React.createElement("div", {className: "marker-viewer"}, this.writeMarkers());
     };
     return MarkerViewerComponent;
 }(parcel_1.Good));

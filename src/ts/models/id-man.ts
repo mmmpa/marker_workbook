@@ -1,10 +1,6 @@
 export default class IDMan {
   static store:any = {};
 
-  static genId() {
-    return this.id++;
-  }
-
   public id:number;
 
   get myName() {

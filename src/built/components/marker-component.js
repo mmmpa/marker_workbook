@@ -5,31 +5,24 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var React = require("react");
-var MarkerViewerComponent = (function (_super) {
-    __extends(MarkerViewerComponent, _super);
-    function MarkerViewerComponent() {
+var parcel_1 = require("../libs/parcel");
+var MarkerComponent = (function (_super) {
+    __extends(MarkerComponent, _super);
+    function MarkerComponent() {
         _super.apply(this, arguments);
     }
-    MarkerViewerComponent.prototype.componentWillMount = function () {
-        this.componentWillReceiveProps(this.props);
+    MarkerComponent.prototype.onMouseDown = function (e) {
+        this.dispatch('marker:click', this.props.marker, e.nativeEvent.which === 3);
     };
-    MarkerViewerComponent.prototype.shouldComponentUpdate = function (props, _) {
-        return this.props.page !== props.page || this.state.version !== props.page.version;
+    MarkerComponent.prototype.render = function () {
+        var _this = this;
+        var _a = this.props, marker = _a.marker, scale = _a.scale;
+        var wrapper = marker.wrapperCSS(scale);
+        var inner = marker.innerCSS(scale);
+        return React.createElement("div", {className: "marker", style: wrapper, onMouseDown: function (e) { return _this.onMouseDown(e); }}, React.createElement("div", {className: "marker-inner", style: inner}, " "));
     };
-    MarkerViewerComponent.prototype.componentWillReceiveProps = function (props) {
-        this.setState({ version: props.page.version });
-    };
-    MarkerViewerComponent.prototype.writeMarkers = function () {
-        var markers = this.props.page.markers;
-        return markers.map(function (marker) {
-            return React.createElement("div", {className: "marker", style: marker.wrapperCSS}, React.createElement("div", {className: "marker-draw", style: marker.innerCSS}, " "));
-        });
-    };
-    MarkerViewerComponent.prototype.render = function () {
-        return React.createElement("div", {className: "marker-area"}, this.writeMarkers());
-    };
-    return MarkerViewerComponent;
-}(React.Component));
+    return MarkerComponent;
+}(parcel_1.Good));
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = MarkerViewerComponent;
+exports.default = MarkerComponent;
 //# sourceMappingURL=marker-component.js.map

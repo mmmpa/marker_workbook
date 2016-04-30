@@ -10,11 +10,14 @@ var _ = require("lodash");
 var workbook_record_1 = require("../records/workbook-record");
 var Workbook = (function (_super) {
     __extends(Workbook, _super);
-    function Workbook(key, pageCount) {
+    function Workbook(key, pageCount, isPDF) {
         var _this = this;
+        if (isPDF === void 0) { isPDF = false; }
         _super.call(this);
         this.key = key;
         this.pageCount = pageCount;
+        this.isPDF = isPDF;
+        this.pageNumber = 1;
         this.pages = _.times(pageCount, function () { return new page_1.default(); });
         var stored = new workbook_record_1.default(key).read('workbook');
         if (stored) {
@@ -29,8 +32,18 @@ var Workbook = (function (_super) {
             this.pages = _.times(pageCount, function () { return new page_1.default(); });
         }
     }
+    Object.defineProperty(Workbook.prototype, "currentPage", {
+        get: function () {
+            return this.pages[this.pageNumber - 1];
+        },
+        enumerable: true,
+        configurable: true
+    });
     Workbook.prototype.page = function (n) {
-        return this.pages[n - 1];
+        this.pageNumber = n;
+        this.currentPage.update();
+        this.currentPage.updateMarker();
+        return this.currentPage;
     };
     Object.defineProperty(Workbook.prototype, "forJSON", {
         get: function () {

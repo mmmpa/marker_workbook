@@ -6,9 +6,6 @@ var IDMan = (function () {
         }
         this.id = IDMan.store[this.myName] += 1;
     }
-    IDMan.genId = function () {
-        return this.id++;
-    };
     Object.defineProperty(IDMan.prototype, "myName", {
         get: function () {
             return this.constructor.toString().match(/function[ ]+([a-zA-Z0-9_]+)/)[1];

@@ -11,9 +11,6 @@ var FileSelectorContext = (function (_super) {
     function FileSelectorContext() {
         _super.apply(this, arguments);
     }
-    FileSelectorContext.prototype.componentWillReceiveProps = function (props) {
-        console.log('selector', props);
-    };
     FileSelectorContext.prototype.listen = function (to) {
         var _this = this;
         to(null, 'file:open', function (file) { return _this.open(); });

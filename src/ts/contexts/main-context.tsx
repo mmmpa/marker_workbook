@@ -1,11 +1,22 @@
 import {Parcel} from "../libs/parcel";
 import FileHandler from "../models/file-handler";
-import {AppState} from "../constants/constants";
+import {
+  AppState,
+  Route
+} from "../constants/constants";
 import KeyControl from "../models/key-control";
 import WorkbookRecord from "../records/workbook-record";
 require("zepto/zepto.min");
 
-export default class MainContext extends Parcel {
+interface P{
+  routes:Route
+}
+
+interface S{
+  file:FileHandler
+}
+
+export default class MainContext extends Parcel<P,S> {
   componentWillMount() {
     super.componentWillMount();
 

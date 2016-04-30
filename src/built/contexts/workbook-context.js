@@ -13,16 +13,29 @@ var WorkbookContext = (function (_super) {
         _super.apply(this, arguments);
     }
     WorkbookContext.prototype.componentWillMount = function () {
+        var _this = this;
         _super.prototype.componentWillMount.call(this);
         this.setState({
             type: null,
-            pageNumber: 0,
-            pageCount: 0,
             mode: constants_1.ToolMode.DrawingMark,
-            shortCut: null,
             thickness: 40,
             sheetVisibility: true,
+            workbook: null,
             scale: 1
+        });
+        this.props.keyControl.bind('onArrowLeft', 'pdf:back', function () {
+            if (!_this.state.workbook.isPDF) {
+                return;
+            }
+            var pageNumber = _this.state.workbook.pageNumber;
+            _this.dispatch('pdf:page', pageNumber - 1);
+        });
+        this.props.keyControl.bind('onArrowRight', 'pdf:next', function () {
+            if (!_this.state.workbook.isPDF) {
+                return;
+            }
+            var pageNumber = _this.state.workbook.pageNumber;
+            _this.dispatch('pdf:page', pageNumber + 1);
         });
         this.componentWillReceiveProps(this.props);
     };
@@ -40,15 +53,15 @@ var WorkbookContext = (function (_super) {
         to(null, 'tool:thickness', function (thickness) { return _this.setState({ thickness: thickness }); });
         to(null, 'sheet:display', function (sheetVisibility) { return _this.setState({ sheetVisibility: sheetVisibility }); });
         to(null, 'marker:click', function (marker, isRight) { return _this.selectMarker(marker, isRight); });
-        to(null, 'pdf:page', function (pageNumber) { return _this.setState({ pageNumber: pageNumber }, function () { return _this.page(); }); });
-        to(null, 'workbook:scale', function (scale) { return _this.setState({ scale: scale }, function () { return _this.page(); }); });
+        to(null, 'pdf:page', function (nextPageNumber) { return _this.page({ nextPageNumber: nextPageNumber }); });
+        to(null, 'workbook:scale', function (nextScale) { return _this.page({ nextScale: nextScale }); });
         to(null, 'workbook:position:reset', function (scale) { return _this.resetPosition(); });
         to(null, 'workbook:save', function () {
             _this.dispatch('workbook:save:json', _this.state.workbook.forJSON);
         });
     };
     WorkbookContext.prototype.resetPosition = function () {
-        this.state.page.resetPosition();
+        this.state.workbook.currentPage.resetPosition();
         this.setState({});
         this.dispatch('workbook:save');
     };
@@ -67,7 +80,7 @@ var WorkbookContext = (function (_super) {
         if (mode === constants_1.ToolMode.DeletingMark && isRight) {
             return;
         }
-        this.state.page.removeMarker(marker);
+        this.state.workbook.currentPage.removeMarker(marker);
         this.setState({});
         this.dispatch('workbook:save');
     };
@@ -100,16 +113,13 @@ var WorkbookContext = (function (_super) {
         if (file.isPDF) {
             this.setState({ workbookState: constants_1.WorkbookState.Rendering });
             file.pdf.page(1, this.state.scale, function (pageNumber, size, dataURL) {
-                var workbook = new workbook_1.default(file.key, file.pdf.pageCount);
+                var workbook = new workbook_1.default(file.key, file.pdf.pageCount, true);
                 _this.setState({
                     workbookState: constants_1.WorkbookState.Ready,
                     type: constants_1.FileType.PDF,
-                    pageCount: file.pdf.pageCount,
-                    pageNumber: pageNumber,
                     dataURL: dataURL,
                     size: size,
-                    workbook: workbook,
-                    page: workbook.page(1)
+                    workbook: workbook
                 });
             });
         }
@@ -118,28 +128,25 @@ var WorkbookContext = (function (_super) {
             this.setState({
                 workbookState: constants_1.WorkbookState.Ready,
                 type: constants_1.FileType.Image,
-                pageCount: 1,
-                pageNumber: 1,
                 dataURL: file.dataURL,
                 workbook: workbook,
-                size: { width: file.width, height: file.height },
-                page: workbook.page(1)
+                size: { width: file.width, height: file.height }
             });
         }
     };
-    WorkbookContext.prototype.page = function () {
+    WorkbookContext.prototype.page = function (_a) {
         var _this = this;
-        var _a = this.state, pageNumber = _a.pageNumber, scale = _a.scale;
+        var nextPageNumber = _a.nextPageNumber, nextScale = _a.nextScale;
+        var pageNumber = nextPageNumber || this.state.workbook.pageNumber;
+        var scale = nextScale || this.state.scale;
         this.setState({ workbookState: constants_1.WorkbookState.Rendering });
         this.pdf.page(pageNumber, scale, function (pageNumber, size, dataURL) {
-            var nextPage = _this.state.workbook.page(pageNumber);
-            nextPage.update();
+            _this.state.workbook.page(pageNumber);
             _this.setState({
                 workbookState: constants_1.WorkbookState.Ready,
-                pageNumber: pageNumber,
                 dataURL: dataURL,
-                size: size,
-                page: nextPage
+                scale: scale,
+                size: size
             });
         });
     };

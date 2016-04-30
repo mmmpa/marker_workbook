@@ -2,13 +2,57 @@ import * as React from "react";
 import * as ReactAddons from "react-addons";
 import * as ReactDOM from 'react-dom';
 import {Good} from "../libs/parcel";
-import {WorkbookState, ToolMode} from "../constants/constants";
+import {
+  WorkbookState,
+  ToolMode
+} from "../constants/constants";
 import Fa from "../libs/fa";
+import * as _ from 'lodash';
+import Page from "../models/page";
+import WorkbookPDFController from "./pdf-controller";
 
 const classSet = ReactAddons.classSet;
 
-export default class WorkbookToolComponent extends Good {
-  classesFor(tool:ToolMode) {
+interface P {
+  thickness:number,
+  scale:number,
+  sheetVisibility:boolean,
+  mode:ToolMode,
+  page:Page,
+  pageNumber?:number,
+}
+
+interface S {
+  thickness:number,
+  scale:number,
+  sheetVisibility:boolean,
+  mode:ToolMode,
+  pageNumber?:number,
+}
+
+export default class WorkbookToolComponent extends Good<P, S> {
+  watched:string[] = ['thickness', 'scale', 'pageNumber', 'sheetVisibility', 'mode'];
+
+  componentWillMount() {
+    this.componentWillReceiveProps(this.props)
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState(this.watched.reduce((a, k)=> {
+      a[k] = props[k];
+      return a
+    }, {}));
+  }
+
+  prepare(props) {
+    return !!this.watched.some((k)=> this.state[k] !== props[k]);
+  }
+
+  shouldComponentUpdate(props, _) {
+    return this.props.page !== props.page || this.prepare(props);
+  }
+  
+  cx(tool:ToolMode) {
     let {mode} = this.props;
     return classSet({
       'icon-button': true,
@@ -24,9 +68,11 @@ export default class WorkbookToolComponent extends Good {
   }
 
   render() {
+    let {thickness, sheetVisibility} = this.props;
+
     return <div className="tool-area">
       <h1>Sheet</h1>
-      <button className={this.classesVisibility()} onClick={()=> this.dispatch('sheet:display', !this.props.sheetVisibility)}>
+      <button className={this.classesVisibility()} onClick={()=> this.dispatch('sheet:display', !sheetVisibility)}>
         <div className="icon">
           <Fa icon="file"/>
         </div>
@@ -38,29 +84,29 @@ export default class WorkbookToolComponent extends Good {
         </div>
         <p>位置をリセット</p>
       </button>
-      <button className={this.classesFor(ToolMode.SlidingPaper)} onClick={()=> this.dispatch('tool:change:slide:paper')}>
+      <button className={this.cx(ToolMode.SlidingPaper)} onClick={()=> this.dispatch('tool:change:slide:paper')}>
         <div className="icon">
           <Fa icon="arrows"/>
         </div>
         <p>ページを移動</p>
       </button>
-      <button className={this.classesFor(ToolMode.SlidingSheet)} onClick={()=> this.dispatch('tool:change:slide:sheet')}>
+      <button className={this.cx(ToolMode.SlidingSheet)} onClick={()=> this.dispatch('tool:change:slide:sheet')}>
         <div className="icon">
           <Fa icon="file"/> <Fa icon="arrows"/>
         </div>
         <p>シートを移動</p>
       </button>
       <h1>Marker</h1>
-      <select className="thickness" value={this.props.thickness} onChange={(e)=> this.dispatch('tool:thickness', +e.target.value)}>
-        {_.times(10, (n)=> <option value={(n + 1) * 10}>{`${(n + 1) * 10}px`}</option>)}
+      <select className="thickness" value={thickness} onChange={(e)=> this.dispatch('tool:thickness', +e.target.value)}>
+        {_.times(10, (n)=> <option value={(n + 1) * 10} key={n}>{`${(n + 1) * 10}px`}</option>)}
       </select>
-      <button className={this.classesFor(ToolMode.DrawingMark)} onClick={()=> this.dispatch('tool:change:draw:Marker')}>
+      <button className={this.cx(ToolMode.DrawingMark)} onClick={()=> this.dispatch('tool:change:draw:Marker')}>
         <div className="icon">
           <Fa icon="pencil"/>
         </div>
         <p>マーカーを追加</p>
       </button>
-      <button className={this.classesFor(ToolMode.DeletingMark)} onClick={()=> this.dispatch('tool:change:delete:marker')}>
+      <button className={this.cx(ToolMode.DeletingMark)} onClick={()=> this.dispatch('tool:change:delete:marker')}>
         <div className="icon">
           <Fa icon="eraser"/>
         </div>
