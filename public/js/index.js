@@ -568,7 +568,6 @@ var WorkbookContext = (function (_super) {
         _super.apply(this, arguments);
     }
     WorkbookContext.prototype.componentWillMount = function () {
-        var _this = this;
         _super.prototype.componentWillMount.call(this);
         this.setState({
             type: null,
@@ -578,21 +577,23 @@ var WorkbookContext = (function (_super) {
             workbook: null,
             scale: 1
         });
-        this.props.keyControl.bind('onArrowLeft', 'pdf:back', function () {
-            if (!_this.state.workbook.isPDF) {
-                return;
-            }
-            var pageNumber = _this.state.workbook.pageNumber;
-            _this.dispatch('pdf:page', pageNumber - 1);
-        });
-        this.props.keyControl.bind('onArrowRight', 'pdf:next', function () {
-            if (!_this.state.workbook.isPDF) {
-                return;
-            }
-            var pageNumber = _this.state.workbook.pageNumber;
-            _this.dispatch('pdf:page', pageNumber + 1);
-        });
+        this.initializeShortCut(this.props.keyControl);
         this.componentWillReceiveProps(this.props);
+    };
+    WorkbookContext.prototype.initializeShortCut = function (keyControl) {
+        var _this = this;
+        keyControl.bind('onArrowLeft', 'pdf:back', function () { return _this.pageNext(-1); });
+        keyControl.bind('onArrowRight', 'pdf:next', function () { return _this.pageNext(+1); });
+        keyControl.bind('onV', 'sheet:toggle', function () {
+            _this.dispatch('sheet:display', !_this.state.sheetVisibility);
+        });
+    };
+    WorkbookContext.prototype.pageNext = function (n) {
+        if (!this.state.workbook.isPDF) {
+            return;
+        }
+        var pageNumber = this.state.workbook.pageNumber;
+        this.dispatch('pdf:page', pageNumber + n);
     };
     WorkbookContext.prototype.componentWillReceiveProps = function (props) {
         if (this.props.file !== props.file) {

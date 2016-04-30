@@ -25,7 +25,7 @@ interface S {
 export default class WorkbookContext extends Parcel<P,S> {
   componentWillMount() {
     super.componentWillMount();
- 
+
     this.setState({
       type: null,
       mode: ToolMode.DrawingMark,
@@ -35,23 +35,25 @@ export default class WorkbookContext extends Parcel<P,S> {
       scale: 1
     });
 
-    this.props.keyControl.bind('onArrowLeft', 'pdf:back', ()=>{
-      if(!this.state.workbook.isPDF){
-        return;
-      }
-      let {pageNumber} = this.state.workbook;
-      this.dispatch('pdf:page', pageNumber - 1)
-    });
+    this.initializeShortCut(this.props.keyControl);
 
-    this.props.keyControl.bind('onArrowRight', 'pdf:next', ()=>{
-      if(!this.state.workbook.isPDF){
-        return;
-      }
-      let {pageNumber} = this.state.workbook;
-      this.dispatch('pdf:page', pageNumber + 1)
-    });
+    this.componentWillReceiveProps(this.props);
+  }
 
-    this.componentWillReceiveProps(this.props)
+  initializeShortCut(keyControl) {
+    keyControl.bind('onArrowLeft', 'pdf:back', ()=> this.pageNext(-1));
+    keyControl.bind('onArrowRight', 'pdf:next', ()=> this.pageNext(+1));
+    keyControl.bind('onV', 'sheet:toggle', ()=> {
+      this.dispatch('sheet:display', !this.state.sheetVisibility)
+    });
+  }
+
+  pageNext(n) {
+    if (!this.state.workbook.isPDF) {
+      return;
+    }
+    let {pageNumber} = this.state.workbook;
+    this.dispatch('pdf:page', pageNumber + n)
   }
 
   componentWillReceiveProps(props) {
