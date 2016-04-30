@@ -59,6 +59,13 @@ var KeyControl = (function () {
     KeyControl.prototype.strike = function (name, e) {
         if (this.killer && this.killer[name]) {
             e.preventDefault();
+            var active_1 = document.activeElement;
+            active_1.blur();
+            var retrieve_1 = function () {
+                active_1 && active_1.focus();
+                $(window).unbind('keyup', retrieve_1);
+            };
+            $(window).bind('keyup', retrieve_1);
         }
         this.hook && this.hook(name, e);
         if (this.binding[name]) {

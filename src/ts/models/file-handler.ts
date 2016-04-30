@@ -80,8 +80,7 @@ export default class FileHandler {
 
   get pdfReader() {
     return (e)=> {
-      let typedArray = new Uint8Array(e.target.result);
-      PDFJS.getDocument(typedArray).then((pdf)=> {
+      PDFJS.getDocument(e.target.result).then((pdf)=> {
         this.pdf = new PDFHandler(pdf);
         this.callback(this);
       })

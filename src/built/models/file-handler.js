@@ -83,8 +83,7 @@ var FileHandler = (function () {
         get: function () {
             var _this = this;
             return function (e) {
-                var typedArray = new Uint8Array(e.target.result);
-                PDFJS.getDocument(typedArray).then(function (pdf) {
+                PDFJS.getDocument(e.target.result).then(function (pdf) {
                     _this.pdf = new pdf_handler_1.default(pdf);
                     _this.callback(_this);
                 });

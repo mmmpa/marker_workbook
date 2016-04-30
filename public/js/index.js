@@ -148,7 +148,9 @@ var WorkbookPDFController = (function (_super) {
             return null;
         }
         var pageNumber = workbook.pageNumber, pageCount = workbook.pageCount;
-        return React.createElement("section", {className: "pdf-tool"}, React.createElement("h1", null, "PDF"), React.createElement("select", {className: "scale", value: this.props.scale, onChange: function (e) { return _this.dispatch('workbook:scale', +e.target.value); }}, [0.5, 1, 2, 3, 4].map(function (n) { return React.createElement("option", {value: n, key: n}, n * 100 + "%"); })), React.createElement("button", {className: "icon-button next", disabled: this.isRendering, onClick: function () { return _this.pageNext(pageNumber + 1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-right"})), React.createElement("p", null, "次ページ")), React.createElement("button", {className: "icon-button previous", disabled: this.isRendering, onClick: function () { return _this.pageNext(pageNumber - 1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-left"})), React.createElement("p", null, "前ページ")), React.createElement("div", {className: "page-number"}, React.createElement("label", null, pageNumber, "/", pageCount)), this.writeRendering());
+        return React.createElement("section", {className: "pdf-tool"}, React.createElement("h1", null, "PDF"), React.createElement("select", {className: "scale", value: this.props.scale, onChange: function (e) {
+            _this.dispatch('workbook:scale', +e.target.value);
+        }}, [0.5, 1, 2, 3, 4].map(function (n) { return React.createElement("option", {value: n, key: n}, n * 100 + "%"); })), React.createElement("button", {className: "icon-button next", disabled: this.isRendering, onClick: function () { return _this.pageNext(pageNumber + 1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-right"})), React.createElement("p", null, "次ページ")), React.createElement("button", {className: "icon-button previous", disabled: this.isRendering, onClick: function () { return _this.pageNext(pageNumber - 1); }}, React.createElement("div", null, React.createElement(fa_1.default, {icon: "chevron-left"})), React.createElement("p", null, "前ページ")), React.createElement("div", {className: "page-number"}, React.createElement("label", null, pageNumber, "/", pageCount)), this.writeRendering());
     };
     return WorkbookPDFController;
 }(parcel_1.Good));
@@ -379,7 +381,10 @@ var WorkbookToolComponent = (function (_super) {
     WorkbookToolComponent.prototype.render = function () {
         var _this = this;
         var _a = this.props, thickness = _a.thickness, sheetVisibility = _a.sheetVisibility;
-        return React.createElement("div", {className: "tool-area"}, React.createElement("h1", null, "Sheet"), React.createElement("button", {className: this.classesVisibility(), onClick: function () { return _this.dispatch('sheet:display', !sheetVisibility); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "file"})), React.createElement("p", null, "シートを表示")), React.createElement("button", {className: "icon-button", onClick: function () { return _this.dispatch('workbook:position:reset'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "copy"})), React.createElement("p", null, "位置をリセット")), React.createElement("button", {className: this.cx(constants_1.ToolMode.SlidingPaper), onClick: function () { return _this.dispatch('tool:change:slide:paper'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "arrows"})), React.createElement("p", null, "ページを移動")), React.createElement("button", {className: this.cx(constants_1.ToolMode.SlidingSheet), onClick: function () { return _this.dispatch('tool:change:slide:sheet'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "file"}), " ", React.createElement(fa_1.default, {icon: "arrows"})), React.createElement("p", null, "シートを移動")), React.createElement("h1", null, "Marker"), React.createElement("select", {className: "thickness", value: thickness, onChange: function (e) { return _this.dispatch('tool:thickness', +e.target.value); }}, _.times(10, function (n) { return React.createElement("option", {value: (n + 1) * 10, key: n}, (n + 1) * 10 + "px"); })), React.createElement("button", {className: this.cx(constants_1.ToolMode.DrawingMark), onClick: function () { return _this.dispatch('tool:change:draw:Marker'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "pencil"})), React.createElement("p", null, "マーカーを追加")), React.createElement("button", {className: this.cx(constants_1.ToolMode.DeletingMark), onClick: function () { return _this.dispatch('tool:change:delete:marker'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "eraser"})), React.createElement("p", null, "マーカーを消す")));
+        return React.createElement("div", {className: "tool-area"}, React.createElement("h1", null, "Sheet"), React.createElement("button", {className: this.classesVisibility(), onClick: function () { return _this.dispatch('sheet:display', !sheetVisibility); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "file"})), React.createElement("p", null, "シートを表示")), React.createElement("button", {className: "icon-button", onClick: function () { return _this.dispatch('workbook:position:reset'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "copy"})), React.createElement("p", null, "位置をリセット")), React.createElement("button", {className: this.cx(constants_1.ToolMode.SlidingPaper), onClick: function () { return _this.dispatch('tool:change:slide:paper'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "arrows"})), React.createElement("p", null, "ページを移動")), React.createElement("button", {className: this.cx(constants_1.ToolMode.SlidingSheet), onClick: function () { return _this.dispatch('tool:change:slide:sheet'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "file"}), " ", React.createElement(fa_1.default, {icon: "arrows"})), React.createElement("p", null, "シートを移動")), React.createElement("h1", null, "Marker"), React.createElement("select", {className: "thickness", value: thickness, onChange: function (e) {
+            e.target.blur();
+            _this.dispatch('tool:thickness', +e.target.value);
+        }}, _.times(10, function (n) { return React.createElement("option", {value: (n + 1) * 10, key: n}, (n + 1) * 10 + "px"); })), React.createElement("button", {className: this.cx(constants_1.ToolMode.DrawingMark), onClick: function () { return _this.dispatch('tool:change:draw:Marker'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "pencil"})), React.createElement("p", null, "マーカーを追加")), React.createElement("button", {className: this.cx(constants_1.ToolMode.DeletingMark), onClick: function () { return _this.dispatch('tool:change:delete:marker'); }}, React.createElement("div", {className: "icon"}, React.createElement(fa_1.default, {icon: "eraser"})), React.createElement("p", null, "マーカーを消す")));
     };
     return WorkbookToolComponent;
 }(parcel_1.Good));
@@ -1102,8 +1107,7 @@ var FileHandler = (function () {
         get: function () {
             var _this = this;
             return function (e) {
-                var typedArray = new Uint8Array(e.target.result);
-                PDFJS.getDocument(typedArray).then(function (pdf) {
+                PDFJS.getDocument(e.target.result).then(function (pdf) {
                     _this.pdf = new pdf_handler_1.default(pdf);
                     _this.callback(_this);
                 });
@@ -1218,6 +1222,13 @@ var KeyControl = (function () {
     KeyControl.prototype.strike = function (name, e) {
         if (this.killer && this.killer[name]) {
             e.preventDefault();
+            var active_1 = document.activeElement;
+            active_1.blur();
+            var retrieve_1 = function () {
+                active_1 && active_1.focus();
+                $(window).unbind('keyup', retrieve_1);
+            };
+            $(window).bind('keyup', retrieve_1);
         }
         this.hook && this.hook(name, e);
         if (this.binding[name]) {

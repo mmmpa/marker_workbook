@@ -1,5 +1,3 @@
-
-
 export default class KeyControl {
   downStore:any = {};
   binding:any = {}
@@ -23,7 +21,7 @@ export default class KeyControl {
     this.binding[keyName][callbackName] = callback;
   }
 
-  unbind(keyName, callbackName){
+  unbind(keyName, callbackName) {
     this.binding[keyName][callbackName] = null;
   }
 
@@ -79,6 +77,15 @@ export default class KeyControl {
   strike(name:string, e:KeyboardEvent) {
     if (this.killer && this.killer[name]) {
       e.preventDefault();
+      let active = document.activeElement as HTMLElement;
+      active.blur();
+
+      let retrieve = ()=> {
+        active && active.focus();
+        $(window).unbind('keyup', retrieve);
+      };
+
+      $(window).bind('keyup', retrieve);
     }
     this.hook && this.hook(name, e)
     if (this.binding[name]) {

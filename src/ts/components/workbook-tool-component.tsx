@@ -51,7 +51,7 @@ export default class WorkbookToolComponent extends Good<P, S> {
   shouldComponentUpdate(props, _) {
     return this.props.page !== props.page || this.prepare(props);
   }
-  
+
   cx(tool:ToolMode) {
     let {mode} = this.props;
     return classSet({
@@ -97,7 +97,9 @@ export default class WorkbookToolComponent extends Good<P, S> {
         <p>シートを移動</p>
       </button>
       <h1>Marker</h1>
-      <select className="thickness" value={thickness} onChange={(e)=> this.dispatch('tool:thickness', +e.target.value)}>
+      <select className="thickness" value={thickness} onChange={(e)=> {
+      e.target.blur()
+      this.dispatch('tool:thickness', +e.target.value)}}>
         {_.times(10, (n)=> <option value={(n + 1) * 10} key={n}>{`${(n + 1) * 10}px`}</option>)}
       </select>
       <button className={this.cx(ToolMode.DrawingMark)} onClick={()=> this.dispatch('tool:change:draw:Marker')}>
