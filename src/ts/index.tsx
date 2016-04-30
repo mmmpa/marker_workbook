@@ -18,12 +18,12 @@ class MarkerWorkbook {
     ReactDOM.render(
       <article className="dot-body">
         <MainContext {...{firstDataURI, firstWorkbookData}}>
-          <FileSelectorContext route={Route.FileSelector}>
-            <FileSelectorComponent/>
-          </FileSelectorContext>
           <WorkbookContext route={Route.Workbook}>
             <WorkbookComponent/>
           </WorkbookContext>
+          <FileSelectorContext route={Route.FileSelector}>
+            <FileSelectorComponent/>
+          </FileSelectorContext>
         </MainContext>
       </article>
       , dom);
