@@ -18,7 +18,7 @@ export default class Workbook extends IDMan {
         return Page.fromJSON(pageData);
       });
       if (this.page.length < pageCount) {
-        _.times(pageCount - this.page.length, ()=> this.pages.push(new Page()))
+        _.times(pageCount - this.page.length + 1, ()=> this.pages.push(new Page()))
       }
     } else {
       this.pages = _.times(pageCount, ()=> new Page());

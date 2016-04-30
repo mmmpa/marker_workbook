@@ -25,7 +25,7 @@ var Workbook = (function (_super) {
                 return page_1.default.fromJSON(pageData);
             });
             if (this.page.length < pageCount) {
-                _.times(pageCount - this.page.length, function () { return _this.pages.push(new page_1.default()); });
+                _.times(pageCount - this.page.length + 1, function () { return _this.pages.push(new page_1.default()); });
             }
         }
         else {

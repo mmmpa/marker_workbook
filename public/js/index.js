@@ -613,6 +613,7 @@ var WorkbookContext = (function (_super) {
         to(null, 'workbook:scale', function (nextScale) { return _this.page({ nextScale: nextScale }); });
         to(null, 'workbook:position:reset', function (scale) { return _this.resetPosition(); });
         to(null, 'workbook:save', function () {
+            console.log(_this.state.workbook.forJSON);
             _this.dispatch('workbook:save:json', _this.state.workbook.forJSON);
         });
     };
@@ -1461,7 +1462,7 @@ var Workbook = (function (_super) {
                 return page_1.default.fromJSON(pageData);
             });
             if (this.page.length < pageCount) {
-                _.times(pageCount - this.page.length, function () { return _this.pages.push(new page_1.default()); });
+                _.times(pageCount - this.page.length + 1, function () { return _this.pages.push(new page_1.default()); });
             }
         }
         else {

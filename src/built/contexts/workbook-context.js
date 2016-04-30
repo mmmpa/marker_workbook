@@ -58,6 +58,7 @@ var WorkbookContext = (function (_super) {
         to(null, 'workbook:scale', function (nextScale) { return _this.page({ nextScale: nextScale }); });
         to(null, 'workbook:position:reset', function (scale) { return _this.resetPosition(); });
         to(null, 'workbook:save', function () {
+            console.log(_this.state.workbook.forJSON);
             _this.dispatch('workbook:save:json', _this.state.workbook.forJSON);
         });
     };

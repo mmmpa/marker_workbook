@@ -77,6 +77,7 @@ export default class WorkbookContext extends Parcel<P,S> {
     to(null, 'workbook:scale', (nextScale)=> this.page({nextScale}));
     to(null, 'workbook:position:reset', (scale)=> this.resetPosition());
     to(null, 'workbook:save', ()=> {
+      console.log(this.state.workbook.forJSON)
       this.dispatch('workbook:save:json', this.state.workbook.forJSON)
     });
   }
