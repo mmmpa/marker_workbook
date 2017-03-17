@@ -1,0 +1,18 @@
+FROM debian:jessie
+
+RUN apt-get update
+
+RUN apt-get install -y \
+    git \
+    wget
+
+RUN wget https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
+
+RUN tar -xvf go1.8.linux-amd64.tar.gz && \
+    mv go /usr/local
+
+RUN mkdir -p /root/go/src/github.com/mmmpa/ && \
+    echo 'export GOROOT=/usr/local/go' >> ~/.bashrc  && \
+    echo 'export GOPATH=/root/go' >> ~/.bashrc  && \
+    echo 'export PATH=$GOPATH/bin:$GOROOT/bin:$PATH' >> ~/.bashrc
+
