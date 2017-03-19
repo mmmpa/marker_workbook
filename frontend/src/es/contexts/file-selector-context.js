@@ -1,9 +1,16 @@
-import { Parcel } from '../libs/parcel';
+// @flow
+
+import { feeder, eater } from '../lib/decorators/feeder'
+import React, { Component } from 'react';
 import FileRead from '../models/file-read';
 
-export default class FileSelectorContext extends Parcel<{}, {}> {
-  listen (to) {
-    to(null, 'file:open', () => this.open());
+@feeder
+@eater
+export default class FileSelectorContext extends Component {
+  dispatch: EaterDispatch;
+
+  listen (to: FeederListenTo) {
+    to('file:open', () => this.open());
   }
 
   open () {

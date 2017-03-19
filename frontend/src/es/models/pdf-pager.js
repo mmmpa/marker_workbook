@@ -14,15 +14,19 @@ function setupCanvas (viewport) {
 export default class PDFPager {
   pdf: any;
   pageStore: StoredPage[][];
+  pageNumber: number;
 
   constructor ({ pdf }: {pdf: any}) {
     this.pdf = pdf;
     this.pageStore = [];
+    this.pageNumber = 1;
   }
 
   page ({ pageNumber: number, scale, callback }: PagingParameters): void {
     const pageNumber = this.normalizePageNumber(number);
     const stored = this.pick(pageNumber, scale);
+
+    this.pageNumber = pageNumber;
 
     if (stored) {
       const {

@@ -1,10 +1,17 @@
+// @flow
+
+import IDMan from '../lib/decorators/id-man';
 import Marker from './marker';
-import IDMan from './id-man';
 
-export default class Page extends IDMan {
+@IDMan
+export default class PageMeta {
+  pagePosition: Position;
+  sheetPosition: Position;
+  markers: Marker[];
+  version: number;
+  markerVersion: number;
+
   constructor () {
-    super();
-
     this.pagePosition = { x: 0, y: 0 };
     this.sheetPosition = { x: 0, y: 0 };
     this.markers = [];
@@ -12,42 +19,42 @@ export default class Page extends IDMan {
     this.markerVersion = 0;
   }
 
-  update () {
+  update (): void {
     this.version++;
   }
 
-  updateMarker () {
+  updateMarker (): void {
     this.markerVersion++;
   }
 
-  resetPosition () {
+  resetPosition (): void {
     this.pagePosition = { x: 0, y: 0 };
     this.sheetPosition = { x: 0, y: 0 };
     this.update();
   }
 
-  newMarker (x, y, thickness = 40, length = 0, rotation = 0): Marker {
-    const newMarker = new Marker(x, y, length, thickness, rotation);
+  newMarker ({ x, y, thickness = 40, length = 0, rotation = 0 }: MarkerParameters): Marker {
+    const newMarker = new Marker({x, y, length, thickness, rotation});
     this.markers.push(newMarker);
     return newMarker;
   }
 
-  removeMarker (marker) {
+  removeMarker (marker: Marker): void {
     this.markers = this.markers.filter(m => m.id !== marker.id);
     this.updateMarker();
   }
 
-  moveSheet (moveX, moveY) {
-    this.sheetPosition.x += moveX;
-    this.sheetPosition.y += moveY;
+  moveSheet ({ x, y }: Position): void {
+    this.sheetPosition.x += x;
+    this.sheetPosition.y += y;
   }
 
-  movePage (moveX, moveY) {
-    this.pagePosition.x += moveX;
-    this.pagePosition.y += moveY;
+  movePage ({ x, y }: Position): void {
+    this.pagePosition.x += x;
+    this.pagePosition.y += y;
   }
 
-  get forJSON () {
+  get forJSON (): any {
     const { pagePosition, sheetPosition, markers } = this;
     return {
       pagePosition,
@@ -56,8 +63,8 @@ export default class Page extends IDMan {
     };
   }
 
-  static fromJSON (data) {
-    const page = new Page();
+  static fromJSON (data): PageMeta {
+    const page = new PageMeta();
     page.pagePosition = data.pagePosition;
     page.sheetPosition = data.sheetPosition;
     page.markers = data.markers.map(markerData => Marker.fromJSON(markerData));

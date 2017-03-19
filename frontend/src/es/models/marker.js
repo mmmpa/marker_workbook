@@ -1,9 +1,17 @@
-import IDMan from './id-man';
+// @flow
 
-export default class Marker extends IDMan {
-  constructor ({x, y, length, thickness, rotation}) {
-    super();
+import IDMan from '../lib/decorators/id-man';
 
+@IDMan
+export default class Marker {
+  id: number;
+  x: number;
+  y: number;
+  thickness: number;
+  length: number;
+  rotation: number;
+
+  constructor ({x, y, length, thickness, rotation}: MarkerParameters) {
     this.x = x;
     this.y = y;
     this.length = length;
@@ -11,7 +19,7 @@ export default class Marker extends IDMan {
     this.rotation = rotation;
   }
 
-  getEnd () {
+  getEnd (): Position {
     const {
       x,
       y,
@@ -22,10 +30,10 @@ export default class Marker extends IDMan {
     const endX = x + Math.cos(radian) * length;
     const endY = y + Math.sin(radian) * length;
 
-    return { endX, endY };
+    return { x: endX, y: endY };
   }
 
-  to (x, y) {
+  to ({x, y}: Position): void {
     const moveX = x - this.x;
     const moveY = y - this.y;
 
@@ -33,7 +41,7 @@ export default class Marker extends IDMan {
     this.length = Math.sqrt(moveX * moveX + moveY * moveY);
   }
 
-  wrapperCSS (scale) {
+  wrapperCSS (scale: number): any {
     const {
       x,
       y,
@@ -47,7 +55,7 @@ export default class Marker extends IDMan {
     };
   }
 
-  innerCSS (scale) {
+  innerCSS (scale: number): any {
     const {
       length,
       thickness,
@@ -59,17 +67,16 @@ export default class Marker extends IDMan {
     };
   }
 
-  get radian () {
+  get radian (): number {
     return this.rotation * Math.PI / 180;
   }
 
-  get forJSON () {
+  get forJSON (): MarkerParameters {
     const { x, y, length, rotation, thickness } = this;
     return { x, y, length, rotation, thickness };
   }
 
-  static fromJSON (data) {
-    const { x, y, length, thickness, rotation } = data;
-    return new Marker(x, y, length, thickness, rotation);
+  static fromJSON (data: MarkerParameters): Marker {
+    return new Marker(data);
   }
 }

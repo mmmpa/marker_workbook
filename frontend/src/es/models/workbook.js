@@ -1,42 +1,43 @@
-import IDMan from './id-man';
-import Page from './page';
-import * as _ from 'lodash';
-import WorkbookRecord from '../records/workbook-record';
+// @flow
 
-export default class Workbook extends IDMan {
-  pageNumber:number = 1;
-  pages:Page[];
+import IDMan from '../lib/decorators/id-man';
+import PageMeta from './page-meta';
+import Marker from '../models/marker'
 
-  constructor (key, pageCount:number, isPDF:boolean = false) {
-    super();
+@IDMan
+export default class Workbook {
+  pageNumber: number;
+  pager: Pager;
+  pageMetas: PageMeta[]
 
-    this.pages = _.times(pageCount, () => new Page());
+  constructor ({ pager }: { pager: Pager }) {
+    this.pager = pager;
+    this.pageMetas = [];
 
-    const stored = new WorkbookRecord(key).read('workbook');
-    if (stored) {
-      this.pages = stored.pages.map(pageData => Page.fromJSON(pageData));
-      if (this.page.length < pageCount) {
-        _.times(pageCount - this.page.length + 1, () => this.pages.push(new Page()));
-      }
-    } else {
-      this.pages = _.times(pageCount, () => new Page());
+    for (let i = pager.pageCount; i--;) {
+      this.pageMetas.push(new PageMeta())
     }
   }
 
-  get currentPage () {
-    return this.pages[this.pageNumber - 1];
+  resetPosition () {
+
   }
 
-  page (n) {
-    this.pageNumber = n;
-    this.currentPage.update();
-    this.currentPage.updateMarker();
-    return this.currentPage;
+  removeMarker (marker: Marker) {
+
   }
 
-  get forJSON () {
+  get currentPage (): number {
+    return this.pager.pageNumber;
+  }
+
+  page (p: PagingParameters): void {
+    this.pager.page(p)
+  }
+
+  get forJSON (): { pages: any[] } {
     return {
-      pages: this.pages.map(page => page.forJSON),
+      pages: this.pageMetas.map(m => m.forJSON),
     };
   }
 }

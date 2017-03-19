@@ -1,8 +1,10 @@
+// @flow
+
 import { EventEmitter } from 'events';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-export function feeder (ReactComponent) {
+export function feeder (ReactComponent: any) {
   return class extends ReactComponent {
     addedOnStore = [];
 
@@ -31,13 +33,13 @@ export function feeder (ReactComponent) {
       }
     }
 
-    getChildContext () {
+    getChildContext (): any {
       const base = super.getChildContext ? super.getChildContext() : {};
 
       return Object.assign(base, { emitter: this.context.emitter || this.emitter });
     }
 
-    get children () {
+    get children (): any[] {
       const { children } = this.props;
 
       if (!children) {
@@ -67,9 +69,9 @@ export function feeder (ReactComponent) {
   };
 }
 
-export function eater (ReactComponent) {
+export function eater (ReactComponent: any) {
   return class extends ReactComponent {
-    dispatch (event, ...args) {
+    dispatch (name: string, ...args: any[]) {
       super.dispatch && super.dispatch();
       return this.context.emitter.emit(event, ...args);
     }

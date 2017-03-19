@@ -5,11 +5,16 @@ export default class ImagePager {
   height: number;
   dataURL: string;
   scale: number;
+  pageNumber: number;
+  pageCount: number;
 
   constructor ({ image, dataURL }: {image: Image, dataURL: string}) {
     this.width = image.width;
     this.height = image.height;
     this.dataURL = dataURL;
+
+    this.pageNumber = 1;
+    this.pageCount = 1;
 
     this.scale = 1;
   }
@@ -17,9 +22,8 @@ export default class ImagePager {
   page ({ scale, callback }: PagingParameters) {
     this.scale = scale;
 
-    const pageNumber = 1;
-
     const {
+      pageNumber,
       size,
       dataURL,
     } = this;
@@ -32,9 +36,5 @@ export default class ImagePager {
       width: this.width * this.scale,
       height: this.height * this.scale,
     }
-  }
-
-  get pageCount (): number {
-    return 1;
   }
 }

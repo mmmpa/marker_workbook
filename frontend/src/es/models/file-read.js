@@ -5,9 +5,6 @@ import { FileType } from '../constants/constants';
 import PDFPager from './pdf-pager';
 import ImagePager from './image-pager';
 
-declare var PDFJS: any;
-declare var $: any;
-
 PDFJS.workerSrc = './js/pdf.worker.js';
 PDFJS.cMapUrl = './cmaps/';
 PDFJS.cMapPacked = true;
