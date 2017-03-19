@@ -1,0 +1,24 @@
+FROM debian:jessie
+
+RUN apt-get update
+
+RUN apt-get install -y \
+    git \
+    xz-utils \
+    wget
+
+RUN wget https://nodejs.org/dist/v7.7.3/node-v7.7.3-linux-x64.tar.xz
+RUN tar -xvf node-v7.7.3-linux-x64.tar.xz
+RUN mv node-v7.7.3-linux-x64 /opt/node
+
+RUN export PATH=/opt/node/bin:$PATH && \
+    npm install -g yarn && \
+    npm install -g webpack
+
+RUN mkdir -p /root/workspace && \
+    echo 'export PATH=/opt/node/bin:$PATH' >> ~/.bashrc
+
+CMD export PATH=/opt/node/bin:$PATH && \
+    cd /root/workspace/src && \
+    ls -la && \
+    yarn install
