@@ -1,0 +1,10 @@
+[ignore]
+.*/node_modules/.*
+
+[include]
+
+[libs]
+./es/decls
+
+[options]
+unsafe.enable_getters_and_setters=true

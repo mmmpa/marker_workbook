@@ -1,16 +1,16 @@
 import { Parcel } from '../libs/parcel';
-import FileHandler from '../models/file-handler';
+import FileRead from '../models/file-read';
 
 export default class FileSelectorContext extends Parcel<{}, {}> {
   listen (to) {
-    to(null, 'file:open', file => this.open());
+    to(null, 'file:open', () => this.open());
   }
 
   open () {
     this.dispatch('file:open:start');
-    const fileHandler = new FileHandler(file => this.dispatch('file:set', file));
-    const $fileListener = $('<input type="file"/>');
-    $fileListener.bind('change', fileHandler.inputHandler);
-    $fileListener.trigger('click');
+    new FileRead({
+      succeed: result => this.dispatch('file:open:complete', result) ,
+      fail: error => this.dispatch('file:open:fail', error)
+    }).run()
   }
 }

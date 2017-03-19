@@ -1,4 +1,5 @@
-import { Parcel } from '../libs/parcel';
+import React, { Component } from 'react';
+
 import {
   FileType,
   WorkbookState,
@@ -7,10 +8,9 @@ import {
 import FileHandler from '../models/file-handler';
 import Workbook from '../models/workbook';
 
-export default class WorkbookContext extends Parcel {
+@feeder
+export default class WorkbookContext extends Component {
   componentWillMount () {
-    super.componentWillMount();
-
     this.setState({
       type: null,
       mode: ToolMode.DrawingMark,
